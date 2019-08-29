@@ -25,6 +25,7 @@ namespace irm {
 class IRMutation {
 public:
   virtual bool canMutate(llvm::Instruction *instruction) = 0;
+  virtual void mutate(llvm::Instruction *instruction) = 0;
   virtual ~IRMutation() = default;
 };
 
