@@ -1,5 +1,6 @@
 set (SOURCES
   Mutations/BinaryOperatorReplacementTests.cpp
+  Mutations/InstrinsicReplacementTests.cpp
 )
 add_executable(irm-tests ${SOURCES})
 target_link_libraries(irm-tests irm google-test)
