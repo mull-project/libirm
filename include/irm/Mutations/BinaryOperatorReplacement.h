@@ -39,7 +39,8 @@ public:
     auto basicBlock = instruction->getParent();
     auto lhs = instruction->getOperand(0);
     auto rhs = instruction->getOperand(1);
-    auto replacement = llvm::BinaryOperator::Create(to, lhs, rhs, "sub", basicBlock);
+    auto replacement = llvm::BinaryOperator::Create(to, lhs, rhs, "");
+    replacement->insertAfter(instruction);
     instruction->replaceAllUsesWith(replacement);
     instruction->eraseFromParent();
   }
@@ -47,26 +48,26 @@ public:
 private:
 };
 
-using AddToSub = BinaryOperatorReplacement<llvm::Instruction::Add, llvm::Instruction::Sub>;
-using FAddToFSub = BinaryOperatorReplacement<llvm::Instruction::FAdd, llvm::Instruction::FSub>;
+typedef BinaryOperatorReplacement<llvm::Instruction::Add, llvm::Instruction::Sub> AddToSub;
+typedef BinaryOperatorReplacement<llvm::Instruction::FAdd, llvm::Instruction::FSub> FAddToFSub;
 
-using SubToAdd = BinaryOperatorReplacement<llvm::Instruction::Sub, llvm::Instruction::Add>;
-using FSubToFAdd = BinaryOperatorReplacement<llvm::Instruction::FSub, llvm::Instruction::FAdd>;
+typedef BinaryOperatorReplacement<llvm::Instruction::Sub, llvm::Instruction::Add> SubToAdd;
+typedef BinaryOperatorReplacement<llvm::Instruction::FSub, llvm::Instruction::FAdd> FSubToFAdd;
 
-using MulToSDiv = BinaryOperatorReplacement<llvm::Instruction::Mul, llvm::Instruction::SDiv>;
-using MulToUDiv = BinaryOperatorReplacement<llvm::Instruction::Mul, llvm::Instruction::UDiv>;
-using FMulToFDiv = BinaryOperatorReplacement<llvm::Instruction::FMul, llvm::Instruction::FDiv>;
+typedef BinaryOperatorReplacement<llvm::Instruction::Mul, llvm::Instruction::SDiv> MulToSDiv;
+typedef BinaryOperatorReplacement<llvm::Instruction::Mul, llvm::Instruction::UDiv> MulToUDiv;
+typedef BinaryOperatorReplacement<llvm::Instruction::FMul, llvm::Instruction::FDiv> FMulToFDiv;
 
-using UDivToURem = BinaryOperatorReplacement<llvm::Instruction::UDiv, llvm::Instruction::URem>;
-using SDivToSRem = BinaryOperatorReplacement<llvm::Instruction::SDiv, llvm::Instruction::SRem>;
-using FDivToFRem = BinaryOperatorReplacement<llvm::Instruction::FDiv, llvm::Instruction::FRem>;
+typedef BinaryOperatorReplacement<llvm::Instruction::UDiv, llvm::Instruction::URem> UDivToURem;
+typedef BinaryOperatorReplacement<llvm::Instruction::SDiv, llvm::Instruction::SRem> SDivToSRem;
+typedef BinaryOperatorReplacement<llvm::Instruction::FDiv, llvm::Instruction::FRem> FDivToFRem;
 
-using UDivToMul = BinaryOperatorReplacement<llvm::Instruction::UDiv, llvm::Instruction::Mul>;
-using SDivToMul = BinaryOperatorReplacement<llvm::Instruction::SDiv, llvm::Instruction::Mul>;
-using FDivToFMul = BinaryOperatorReplacement<llvm::Instruction::FDiv, llvm::Instruction::FMul>;
+typedef BinaryOperatorReplacement<llvm::Instruction::UDiv, llvm::Instruction::Mul> UDivToMul;
+typedef BinaryOperatorReplacement<llvm::Instruction::SDiv, llvm::Instruction::Mul> SDivToMul;
+typedef BinaryOperatorReplacement<llvm::Instruction::FDiv, llvm::Instruction::FMul> FDivToFMul;
 
-using URemToUDiv = BinaryOperatorReplacement<llvm::Instruction::URem, llvm::Instruction::UDiv>;
-using SRemToSDiv = BinaryOperatorReplacement<llvm::Instruction::SRem, llvm::Instruction::SDiv>;
-using FRemToFDiv = BinaryOperatorReplacement<llvm::Instruction::FRem, llvm::Instruction::FDiv>;
+typedef BinaryOperatorReplacement<llvm::Instruction::URem, llvm::Instruction::UDiv> URemToUDiv;
+typedef BinaryOperatorReplacement<llvm::Instruction::SRem, llvm::Instruction::SDiv> SRemToSDiv;
+typedef BinaryOperatorReplacement<llvm::Instruction::FRem, llvm::Instruction::FDiv> FRemToFDiv;
 
 } // namespace irm

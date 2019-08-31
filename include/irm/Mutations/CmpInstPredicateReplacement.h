@@ -42,7 +42,8 @@ public:
     auto basicBlock = instruction->getParent();
     auto lhs = instruction->getOperand(0);
     auto rhs = instruction->getOperand(1);
-    auto replacement = llvm::CmpInst::Create(cmpType, to, lhs, rhs, "", basicBlock);
+    auto replacement = llvm::CmpInst::Create(cmpType, to, lhs, rhs, "");
+    replacement->insertAfter(instruction);
     instruction->replaceAllUsesWith(replacement);
     instruction->eraseFromParent();
   }
@@ -61,110 +62,110 @@ using ICmpInstPredicateReplacement = CmpInstPredicateReplacement<llvm::Instructi
 #pragma mark Floating ordered comparisons
 
 // == / !=
-using FCmpEQToNE_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OEQ, llvm::CmpInst::FCMP_ONE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OEQ, llvm::CmpInst::FCMP_ONE> FCmpEQToNE_O;
 
 // != / ==
-using FCmpNEToEQ_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ONE, llvm::CmpInst::FCMP_OEQ>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ONE, llvm::CmpInst::FCMP_OEQ> FCmpNEToEQ_O;
 
 // >  / <=
-using FCmpGTToLE_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGT, llvm::CmpInst::FCMP_OLE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGT, llvm::CmpInst::FCMP_OLE> FCmpGTToLE_O;
 
 // <= / >
-using FCmpLEToGT_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLE, llvm::CmpInst::FCMP_OGT>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLE, llvm::CmpInst::FCMP_OGT> FCmpLEToGT_O;
 
 // >= / <
-using FCmpGEToLT_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGE, llvm::CmpInst::FCMP_OLT>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGE, llvm::CmpInst::FCMP_OLT> FCmpGEToLT_O;
 
 // <  / >=
-using FCmpLTToGE_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLT, llvm::CmpInst::FCMP_OGE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLT, llvm::CmpInst::FCMP_OGE> FCmpLTToGE_O;
 
 #pragma mark Floating unordered comparisons
 
 // == / !=
-using FCmpEQToNE_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UEQ, llvm::CmpInst::FCMP_UNE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UEQ, llvm::CmpInst::FCMP_UNE> FCmpEQToNE_U;
 
 // != / ==
-using FCmpNEToEQ_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UNE, llvm::CmpInst::FCMP_UEQ>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UNE, llvm::CmpInst::FCMP_UEQ> FCmpNEToEQ_U;
 
 // >  / <=
-using FCmpGTToLE_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGT, llvm::CmpInst::FCMP_ULE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGT, llvm::CmpInst::FCMP_ULE> FCmpGTToLE_U;
 
 // <= / >
-using FCmpLEToGT_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULE, llvm::CmpInst::FCMP_UGT>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULE, llvm::CmpInst::FCMP_UGT> FCmpLEToGT_U;
 
 // >= / <
-using FCmpGEToLT_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGE, llvm::CmpInst::FCMP_ULT>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGE, llvm::CmpInst::FCMP_ULT> FCmpGEToLT_U;
 
 // <  / >=
-using FCmpLTToGE_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULT, llvm::CmpInst::FCMP_UGE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULT, llvm::CmpInst::FCMP_UGE> FCmpLTToGE_U;
 
 #pragma mark Floating boolean comparisons
 
-using FCmpTrueToFalse =
-    FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_TRUE, llvm::CmpInst::FCMP_FALSE>;
-using FCmpFalseToTrue =
-    FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_FALSE, llvm::CmpInst::FCMP_TRUE>;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_TRUE, llvm::CmpInst::FCMP_FALSE>
+    FCmpTrueToFalse;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_FALSE, llvm::CmpInst::FCMP_TRUE>
+    FCmpFalseToTrue;
 
 #pragma mark Integer comparisons
 
 // == / !=
-using ICmpEQToNE = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_EQ, llvm::CmpInst::ICMP_NE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_EQ, llvm::CmpInst::ICMP_NE> ICmpEQToNE;
 
 // != / ==
-using ICmpNEToEQ = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_NE, llvm::CmpInst::ICMP_EQ>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_NE, llvm::CmpInst::ICMP_EQ> ICmpNEToEQ;
 
 #pragma mark Unsigned integer comparisons
 
 // >  / <=
-using ICmpGTToLE_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGT, llvm::CmpInst::ICMP_ULE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGT, llvm::CmpInst::ICMP_ULE> ICmpGTToLE_U;
 
 // <= / >
-using ICmpLEToGT_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULE, llvm::CmpInst::ICMP_UGT>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULE, llvm::CmpInst::ICMP_UGT> ICmpLEToGT_U;
 
 // >= / <
-using ICmpGEToLT_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGE, llvm::CmpInst::ICMP_ULT>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGE, llvm::CmpInst::ICMP_ULT> ICmpGEToLT_U;
 
 // <  / >=
-using ICmpLTToGE_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULT, llvm::CmpInst::ICMP_UGE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULT, llvm::CmpInst::ICMP_UGE> ICmpLTToGE_U;
 
 #pragma mark Signed integer comparisons
 
 // >  / <=
-using ICmpGTToLE_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGT, llvm::CmpInst::ICMP_SLE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGT, llvm::CmpInst::ICMP_SLE> ICmpGTToLE_S;
 
 // <= / >
-using ICmpLEToGT_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLE, llvm::CmpInst::ICMP_SGT>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLE, llvm::CmpInst::ICMP_SGT> ICmpLEToGT_S;
 
 // >= / <
-using ICmpGEToLT_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGE, llvm::CmpInst::ICMP_SLT>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGE, llvm::CmpInst::ICMP_SLT> ICmpGEToLT_S;
 
 // <  / >=
-using ICmpLTToGE_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLT, llvm::CmpInst::ICMP_SGE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLT, llvm::CmpInst::ICMP_SGE> ICmpLTToGE_S;
 
 #pragma mark - Boundary change
 
 ///  >  | >=
-using ICmpGTToGE_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGT, llvm::CmpInst::ICMP_SGE>;
-using ICmpGTToGE_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGT, llvm::CmpInst::ICMP_UGE>;
-using FCmpGTToGE_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGT, llvm::CmpInst::FCMP_UGE>;
-using FCmpGTToGE_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGT, llvm::CmpInst::FCMP_OGE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGT, llvm::CmpInst::ICMP_SGE> ICmpGTToGE_S;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGT, llvm::CmpInst::ICMP_UGE> ICmpGTToGE_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGT, llvm::CmpInst::FCMP_UGE> FCmpGTToGE_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGT, llvm::CmpInst::FCMP_OGE> FCmpGTToGE_O;
 
 ///  >= | >
-using ICmpGEToGT_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGE, llvm::CmpInst::ICMP_SGT>;
-using ICmpGEToGT_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGE, llvm::CmpInst::ICMP_UGT>;
-using FCmpGEToGT_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGE, llvm::CmpInst::FCMP_UGT>;
-using FCmpGEToGT_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGE, llvm::CmpInst::FCMP_OGT>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SGE, llvm::CmpInst::ICMP_SGT> ICmpGEToGT_S;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_UGE, llvm::CmpInst::ICMP_UGT> ICmpGEToGT_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_UGE, llvm::CmpInst::FCMP_UGT> FCmpGEToGT_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OGE, llvm::CmpInst::FCMP_OGT> FCmpGEToGT_O;
 
 ///  <  | <=
-using ICmpLTToLE_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLT, llvm::CmpInst::ICMP_SLE>;
-using ICmpLTToLE_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULT, llvm::CmpInst::ICMP_ULE>;
-using FCmpLTToLE_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULT, llvm::CmpInst::FCMP_ULE>;
-using FCmpLTToLE_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLT, llvm::CmpInst::FCMP_OLE>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLT, llvm::CmpInst::ICMP_SLE> ICmpLTToLE_S;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULT, llvm::CmpInst::ICMP_ULE> ICmpLTToLE_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULT, llvm::CmpInst::FCMP_ULE> FCmpLTToLE_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLT, llvm::CmpInst::FCMP_OLE> FCmpLTToLE_O;
 
 ///  <= | <
-using ICmpLEToLT_S = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLE, llvm::CmpInst::ICMP_SLT>;
-using ICmpLEToLT_U = ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULE, llvm::CmpInst::ICMP_ULT>;
-using FCmpLEToLT_U = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULE, llvm::CmpInst::FCMP_ULT>;
-using FCmpLEToLT_O = FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLE, llvm::CmpInst::FCMP_OLT>;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_SLE, llvm::CmpInst::ICMP_SLT> ICmpLEToLT_S;
+typedef ICmpInstPredicateReplacement<llvm::CmpInst::ICMP_ULE, llvm::CmpInst::ICMP_ULT> ICmpLEToLT_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_ULE, llvm::CmpInst::FCMP_ULT> FCmpLEToLT_U;
+typedef FCmpInstPredicateReplacement<llvm::CmpInst::FCMP_OLE, llvm::CmpInst::FCMP_OLT> FCmpLEToLT_O;
 
 } // namespace irm

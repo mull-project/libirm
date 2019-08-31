@@ -43,19 +43,22 @@ public:
 
     auto op1 = intrinsic->getOperand(0);
     auto op2 = intrinsic->getOperand(1);
-    llvm::CallInst::Create(replacement, { op1, op2 }, "", instruction->getParent());
+    auto call = llvm::CallInst::Create(replacement, { op1, op2 }, "");
+    call->insertAfter(instruction);
     instruction->eraseFromParent();
   }
 
 private:
 };
 
-using SAddToSSub =
-    IntrinsicReplacement<llvm::Intrinsic::sadd_with_overflow, llvm::Intrinsic::ssub_with_overflow>;
-using SSubToSAdd =
-    IntrinsicReplacement<llvm::Intrinsic::ssub_with_overflow, llvm::Intrinsic::sadd_with_overflow>;
+typedef IntrinsicReplacement<llvm::Intrinsic::sadd_with_overflow,
+                             llvm::Intrinsic::ssub_with_overflow>
+    SAddToSSub;
+typedef IntrinsicReplacement<llvm::Intrinsic::ssub_with_overflow,
+                             llvm::Intrinsic::sadd_with_overflow>
+    SSubToSAdd;
 
-using SAddSatToSSubSat = IntrinsicReplacement<llvm::Intrinsic::sadd_sat, llvm::Intrinsic::ssub_sat>;
-using SSubSatToSAddSat = IntrinsicReplacement<llvm::Intrinsic::ssub_sat, llvm::Intrinsic::sadd_sat>;
+typedef IntrinsicReplacement<llvm::Intrinsic::sadd_sat, llvm::Intrinsic::ssub_sat> SAddSatToSSubSat;
+typedef IntrinsicReplacement<llvm::Intrinsic::ssub_sat, llvm::Intrinsic::sadd_sat> SSubSatToSAddSat;
 
 } // namespace irm
