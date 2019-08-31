@@ -1,5 +1,6 @@
 set (SOURCES
   Mutations/BinaryOperatorReplacementTests.cpp
+  Mutations/CmpInstPredicateReplacementTests.cpp
   Mutations/InstrinsicReplacementTests.cpp
 )
 add_executable(irm-tests ${SOURCES})
