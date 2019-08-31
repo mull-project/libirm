@@ -31,6 +31,9 @@ public:
       return false;
     }
     auto intrinsic = llvm::dyn_cast<llvm::IntrinsicInst>(instruction);
+    if (!intrinsic) {
+      return false;
+    }
     return intrinsic->getIntrinsicID() == from;
   }
 
