@@ -33,6 +33,7 @@ template <typename ConstValueType, typename ReplaceValueType> struct ConstValueC
     return ConstValueType();
   }
 };
+
 template <typename ReplaceValueType> struct ConstValueConstructor<llvm::APInt, ReplaceValueType> {
   llvm::APInt getConstValue(ReplaceValueType value, llvm::Type *returnType) {
     return llvm::APInt(returnType->getIntegerBitWidth(), value);
