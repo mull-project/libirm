@@ -21,9 +21,15 @@
 
 namespace irm {
 
+class _CmpInstPredicateReplacementBase : public IRMutation {
+public:
+  virtual llvm::CmpInst::Predicate _getFrom() = 0;
+  virtual llvm::CmpInst::Predicate _getTo() = 0;
+};
+
 template <llvm::Instruction::OtherOps cmpType, llvm::CmpInst::Predicate from,
           llvm::CmpInst::Predicate to>
-class CmpInstPredicateReplacement : public IRMutation {
+class CmpInstPredicateReplacement : public _CmpInstPredicateReplacementBase {
   static_assert(from != to, "Noop?");
 public:
   bool canMutate(llvm::Instruction *instruction) override {
@@ -48,6 +54,12 @@ public:
     instruction->eraseFromParent();
   }
 
+  llvm::CmpInst::Predicate _getFrom() override {
+    return from;
+  }
+  llvm::CmpInst::Predicate _getTo() override {
+    return to;
+  }
 private:
 };
 

@@ -17,4 +17,5 @@
 #pragma once
 
 #include "irm/Mutations/BinaryOperatorReplacement.h"
+#include "irm/Mutations/CmpInstPredicateReplacement.h"
 #include "irm/Mutations/IntrinsicReplacement.h"
