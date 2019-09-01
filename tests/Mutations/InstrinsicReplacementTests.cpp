@@ -15,7 +15,7 @@
 //
 
 #include <gtest/gtest.h>
-#include <irm/Mutations/IntrinsicReplacement.h>
+#include <irm/irm.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/IntrinsicInst.h>

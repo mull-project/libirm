@@ -15,7 +15,7 @@
 //
 
 #include <gtest/gtest.h>
-#include <irm/Mutations/BinaryOperatorReplacement.h>
+#include <irm/irm.h>
 #include <llvm/IR/Module.h>
 
 using namespace irm;

@@ -1,5 +1,6 @@
 set (SOURCES
   Mutations/BinaryOperatorReplacementTests.cpp
+  Mutations/CallReplacementTests.cpp
   Mutations/CmpInstPredicateReplacementTests.cpp
   Mutations/InstrinsicReplacementTests.cpp
 )
