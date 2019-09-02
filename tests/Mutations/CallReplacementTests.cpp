@@ -21,7 +21,7 @@
 using namespace irm;
 
 TEST(CallReplacement, canMutate) {
-  using Mutator = CallReplacement<IntegerReplacement, llvm::Type::IntegerTyID, 0>;
+  using Mutator = CallReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 0>;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
@@ -47,7 +47,7 @@ TEST(CallReplacement, canMutate) {
 }
 
 TEST(CallReplacement, mutate) {
-  using Mutator = CallReplacement<IntegerReplacement, llvm::Type::IntegerTyID, 15>;
+  using Mutator = CallReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 15>;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);

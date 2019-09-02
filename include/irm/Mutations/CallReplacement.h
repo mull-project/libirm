@@ -16,37 +16,13 @@
 
 #pragma once
 
+#include "irm/ConstConstruction.h"
 #include "irm/IRMutation.h"
 #include <llvm/IR/CallSite.h>
 
 namespace irm {
 
-template <typename ConstType, typename ConstValueType, typename ReplaceValueType>
-struct Replacement {
-  typedef ConstType Type;
-  typedef ConstValueType ValueType;
-  typedef ReplaceValueType ReplaceType;
-};
-
-template <typename ConstValueType, typename ReplaceValueType> struct ConstValueConstructor {
-  ConstValueType getConstValue(ReplaceValueType value, llvm::Type *returnType) {
-    return ConstValueType();
-  }
-};
-
-template <typename ReplaceValueType> struct ConstValueConstructor<llvm::APInt, ReplaceValueType> {
-  llvm::APInt getConstValue(ReplaceValueType value, llvm::Type *returnType) {
-    return llvm::APInt(returnType->getIntegerBitWidth(), value);
-  }
-};
-
-template <typename ReplaceValueType> struct ConstValueConstructor<llvm::APFloat, ReplaceValueType> {
-  llvm::APFloat getConstValue(ReplaceValueType value, llvm::Type *) {
-    return llvm::APFloat(value);
-  }
-};
-
-template <typename ReplacementType, llvm::Type::TypeID returnTypeId, int value>
+template <typename ConstValueConstruct, llvm::Type::TypeID returnTypeId, int value>
 class CallReplacement : public IRMutation {
 public:
   bool canMutate(llvm::Instruction *instruction) override {
@@ -73,14 +49,15 @@ public:
     llvm::CallSite call(instruction);
     auto returnType = call.getFunctionType()->getReturnType();
 
-    ConstValueConstructor<typename ReplacementType::ValueType,
-                          typename ReplacementType::ReplaceType>
-        constValueConstructor;
+    using LLVMInstType = typename ConstValueConstruct::InstType;
+    using LLVMConstType = typename ConstValueConstruct::ConstType;
+    using ValueType = typename ConstValueConstruct::ValueType;
 
-    auto constValue = constValueConstructor.getConstValue(
-        typename ReplacementType::ReplaceType(value), returnType);
+    ConstValueConstructor<LLVMConstType, ValueType> constructor;
 
-    auto replacement = ReplacementType::Type::get(context, constValue);
+    auto constValue = constructor.getConstValue(ValueType(value), returnType);
+
+    auto replacement = LLVMInstType::get(context, constValue);
     instruction->replaceAllUsesWith(replacement);
     instruction->eraseFromParent();
   }
@@ -88,16 +65,12 @@ public:
 private:
 };
 
-typedef Replacement<llvm::ConstantInt, llvm::APInt, int> IntegerReplacement;
-typedef Replacement<llvm::ConstantFP, llvm::APFloat, float> FloatReplacement;
-typedef Replacement<llvm::ConstantFP, llvm::APFloat, double> DoubleReplacement;
-
 template <int value>
-using IntCallReplacement = CallReplacement<IntegerReplacement, llvm::Type::IntegerTyID, value>;
+using IntCallReplacement = CallReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, value>;
 template <int value>
-using FloatCallReplacement = CallReplacement<FloatReplacement, llvm::Type::FloatTyID, value>;
+using FloatCallReplacement = CallReplacement<ConstFloatConstruct, llvm::Type::FloatTyID, value>;
 template <int value>
-using DoubleCallReplacement = CallReplacement<DoubleReplacement, llvm::Type::DoubleTyID, value>;
+using DoubleCallReplacement = CallReplacement<ConstDoubleConstruct, llvm::Type::DoubleTyID, value>;
 
 typedef IntCallReplacement<0> CallIntToZero;
 typedef FloatCallReplacement<0> CallFloatToZero;

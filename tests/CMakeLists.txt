@@ -3,6 +3,7 @@ set (SOURCES
   Mutations/CallRemovalTests.cpp
   Mutations/CallReplacementTests.cpp
   Mutations/CmpInstPredicateReplacementTests.cpp
+  Mutations/ConstatnReplacementTests.cpp
   Mutations/InstrinsicReplacementTests.cpp
 )
 add_executable(irm-tests ${SOURCES})

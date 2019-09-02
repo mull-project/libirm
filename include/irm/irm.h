@@ -20,4 +20,5 @@
 #include "irm/Mutations/CallRemoval.h"
 #include "irm/Mutations/CallReplacement.h"
 #include "irm/Mutations/CmpInstPredicateReplacement.h"
+#include "irm/Mutations/ConstantReplacement.h"
 #include "irm/Mutations/IntrinsicReplacement.h"
