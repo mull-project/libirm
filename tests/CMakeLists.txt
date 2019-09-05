@@ -5,6 +5,7 @@ set (SOURCES
   Mutations/CmpInstPredicateReplacementTests.cpp
   Mutations/ConstatnReplacementTests.cpp
   Mutations/InstrinsicReplacementTests.cpp
+  Mutations/StoreValueReplacementTests.cpp
 )
 add_executable(irm-tests ${SOURCES})
 target_link_libraries(irm-tests irm google-test)

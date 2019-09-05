@@ -22,3 +22,4 @@
 #include "irm/Mutations/CmpInstPredicateReplacement.h"
 #include "irm/Mutations/ConstantReplacement.h"
 #include "irm/Mutations/IntrinsicReplacement.h"
+#include "irm/Mutations/StoreValueReplacement.h"
