@@ -1,0 +1,44 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  test:
+    name: LLVM ${{ matrix.LLVM_VERSION }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        LLVM_VERSION: [8.0.0]
+        os: [ubuntu-18.04, macOS-10.14]
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: Setup OS
+        if: matrix.os == 'macOS-10.14'
+        run: |
+          brew install gnu-tar
+          sudo ln -s /usr/local/bin/gtar /usr/local/bin/tar
+          pip install ansible
+      - name: Prepare working directory
+        run: |
+          sudo mkdir -p /opt
+          sudo chown -R `whoami` /opt
+      - name: Download LLVM
+        run: |
+          cd ci && \
+          ansible-playbook download-llvm.yaml \
+            -e llvm_version=${{ matrix.LLVM_VERSION }} \
+            -e platform=${{ matrix.os }} \
+            -e host=localhost \
+            --verbose
+      - name: Build and run tests
+        run: |
+          cd ci && \
+          ansible-playbook build.yaml \
+            -e llvm_version=${{ matrix.LLVM_VERSION }} \
+            -e platform=${{ matrix.os }} \
+            -e host=localhost \
+            -e source_dir=$PWD/.. \
+            --verbose
