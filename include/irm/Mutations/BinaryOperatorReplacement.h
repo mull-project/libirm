@@ -21,53 +21,42 @@
 
 namespace irm {
 
-// TODO:
-//  - handle NUW
-//  - handle NSW
-//  - handle fast math flags
-template <llvm::Instruction::BinaryOps from, llvm::Instruction::BinaryOps to>
 class BinaryOperatorReplacement : public IRMutation {
 public:
-  bool canMutate(llvm::Instruction *instruction) override {
-    return instruction->getOpcode() == from;
-  }
-  void mutate(llvm::Instruction *instruction) override {
-    assert(canMutate(instruction));
-    assert(instruction->getParent());
-    assert(instruction->getNumOperands() == 2);
-
-    auto basicBlock = instruction->getParent();
-    auto lhs = instruction->getOperand(0);
-    auto rhs = instruction->getOperand(1);
-    auto replacement = llvm::BinaryOperator::Create(to, lhs, rhs, "");
-    replacement->insertAfter(instruction);
-    instruction->replaceAllUsesWith(replacement);
-    instruction->eraseFromParent();
-  }
+  BinaryOperatorReplacement(llvm::Instruction::BinaryOps from, llvm::Instruction::BinaryOps to);
+  bool canMutate(llvm::Instruction *instruction) override;
+  void mutate(llvm::Instruction *instruction) override;
 
 private:
+  llvm::Instruction::BinaryOps from;
+  llvm::Instruction::BinaryOps to;
 };
 
-typedef BinaryOperatorReplacement<llvm::Instruction::Add, llvm::Instruction::Sub> AddToSub;
-typedef BinaryOperatorReplacement<llvm::Instruction::FAdd, llvm::Instruction::FSub> FAddToFSub;
+#define BINARY_REPLACEMENT(FROM, TO)                                                               \
+  class FROM##To##TO : public BinaryOperatorReplacement {                                          \
+  public:                                                                                          \
+    FROM##To##TO() : BinaryOperatorReplacement(llvm::Instruction::FROM, llvm::Instruction::TO) {}  \
+  };
 
-typedef BinaryOperatorReplacement<llvm::Instruction::Sub, llvm::Instruction::Add> SubToAdd;
-typedef BinaryOperatorReplacement<llvm::Instruction::FSub, llvm::Instruction::FAdd> FSubToFAdd;
+BINARY_REPLACEMENT(Add, Sub)
+BINARY_REPLACEMENT(FAdd, FSub)
+BINARY_REPLACEMENT(Sub, Add)
+BINARY_REPLACEMENT(FSub, FAdd)
 
-typedef BinaryOperatorReplacement<llvm::Instruction::Mul, llvm::Instruction::SDiv> MulToSDiv;
-typedef BinaryOperatorReplacement<llvm::Instruction::Mul, llvm::Instruction::UDiv> MulToUDiv;
-typedef BinaryOperatorReplacement<llvm::Instruction::FMul, llvm::Instruction::FDiv> FMulToFDiv;
+BINARY_REPLACEMENT(Mul, SDiv)
+BINARY_REPLACEMENT(Mul, UDiv)
+BINARY_REPLACEMENT(FMul, FDiv)
 
-typedef BinaryOperatorReplacement<llvm::Instruction::UDiv, llvm::Instruction::URem> UDivToURem;
-typedef BinaryOperatorReplacement<llvm::Instruction::SDiv, llvm::Instruction::SRem> SDivToSRem;
-typedef BinaryOperatorReplacement<llvm::Instruction::FDiv, llvm::Instruction::FRem> FDivToFRem;
+BINARY_REPLACEMENT(UDiv, URem)
+BINARY_REPLACEMENT(SDiv, SRem)
+BINARY_REPLACEMENT(FDiv, FRem)
 
-typedef BinaryOperatorReplacement<llvm::Instruction::UDiv, llvm::Instruction::Mul> UDivToMul;
-typedef BinaryOperatorReplacement<llvm::Instruction::SDiv, llvm::Instruction::Mul> SDivToMul;
-typedef BinaryOperatorReplacement<llvm::Instruction::FDiv, llvm::Instruction::FMul> FDivToFMul;
+BINARY_REPLACEMENT(UDiv, Mul)
+BINARY_REPLACEMENT(SDiv, Mul)
+BINARY_REPLACEMENT(FDiv, FMul)
 
-typedef BinaryOperatorReplacement<llvm::Instruction::URem, llvm::Instruction::UDiv> URemToUDiv;
-typedef BinaryOperatorReplacement<llvm::Instruction::SRem, llvm::Instruction::SDiv> SRemToSDiv;
-typedef BinaryOperatorReplacement<llvm::Instruction::FRem, llvm::Instruction::FDiv> FRemToFDiv;
+BINARY_REPLACEMENT(URem, UDiv)
+BINARY_REPLACEMENT(SRem, SDiv)
+BINARY_REPLACEMENT(FRem, FDiv)
 
 } // namespace irm

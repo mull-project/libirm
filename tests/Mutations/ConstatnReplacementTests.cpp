@@ -21,8 +21,6 @@
 using namespace irm;
 
 TEST(ConstantReplacement, canMutate) {
-  using Mutator = ConstantReplacement<ConstIntegerConstruct, 42, 0>;
-
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
@@ -37,7 +35,7 @@ TEST(ConstantReplacement, canMutate) {
   auto fop2 = llvm::ConstantFP::get(llvm::Type::getFloatTy(context), 40);
   auto fadd = llvm::BinaryOperator::CreateFAdd(fop1, fop2, "add", basicBlock);
 
-  Mutator mutator;
+  ConstIntReplacement mutator(42, 0);
   ASSERT_TRUE(mutator.canMutate(add));
   ASSERT_FALSE(mutator.canMutate(fadd));
 }
@@ -62,13 +60,9 @@ TEST(ConstantReplacement, canMutate_severalOperands) {
   auto op2 = llvm::ConstantFP::get(floatType, 40);
   auto call = llvm::CallInst::Create(calledFunction, { op1, op2 }, "", basicBlock);
 
-  using Int_0 = ConstantReplacement<ConstIntegerConstruct, 42, 0>;
-  using Int_1 = ConstantReplacement<ConstIntegerConstruct, 42, 1>;
-  using Int_2 = ConstantReplacement<ConstIntegerConstruct, 42, 2>;
-
-  Int_0 mutator_0;
-  Int_1 mutator_1;
-  Int_2 mutator_2;
+  ConstIntReplacement mutator_0(42, 0);
+  ConstIntReplacement mutator_1(42, 1);
+  ConstIntReplacement mutator_2(42, 2);
 
   ASSERT_TRUE(mutator_0.canMutate(call));
   ASSERT_FALSE(mutator_1.canMutate(call));
@@ -100,9 +94,7 @@ TEST(ConstantReplacement, mutate_int) {
   auto op2Zero = llvm::ConstantFP::get(floatType, 0);
   auto callZeros = llvm::CallInst::Create(calledFunction, { op1Zero, op2Zero }, "", basicBlock);
 
-  using Int_0 = ConstantReplacement<ConstIntegerConstruct, 42, 0>;
-
-  Int_0 mutator_0;
+  ConstIntReplacement mutator_0(42, 0);
 
   mutator_0.mutate(callNonZeros);
   mutator_0.mutate(callZeros);
@@ -138,9 +130,7 @@ TEST(ConstantReplacement, mutate_float) {
   auto op2Zero = llvm::ConstantFP::get(floatType, 0);
   auto callZeros = llvm::CallInst::Create(calledFunction, { op1Zero, op2Zero }, "", basicBlock);
 
-  using Float_1 = ConstantReplacement<ConstFloatConstruct, 42, 1>;
-
-  Float_1 mutator_1;
+  ConstFloatReplacement mutator_1(42, 1);
 
   mutator_1.mutate(callNonZeros);
   mutator_1.mutate(callZeros);

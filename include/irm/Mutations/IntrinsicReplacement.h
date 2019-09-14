@@ -23,45 +23,28 @@
 
 namespace irm {
 
-template <llvm::Intrinsic::ID from, llvm::Intrinsic::ID to>
 class IntrinsicReplacement : public IRMutation {
 public:
-  bool canMutate(llvm::Instruction *instruction) override {
-    if (instruction->getOpcode() != llvm::Instruction::Call) {
-      return false;
-    }
-    auto intrinsic = llvm::dyn_cast<llvm::IntrinsicInst>(instruction);
-    if (!intrinsic) {
-      return false;
-    }
-    return intrinsic->getIntrinsicID() == from;
-  }
+  IntrinsicReplacement(llvm::Intrinsic::ID from, llvm::Intrinsic::ID to);
+  bool canMutate(llvm::Instruction *instruction) override;
 
-  void mutate(llvm::Instruction *instruction) override {
-    assert(instruction);
-    assert(canMutate(instruction));
-    auto intrinsic = llvm::cast<llvm::IntrinsicInst>(instruction);
-    auto replacement = llvm::Intrinsic::getDeclaration(
-        instruction->getModule(), to, { intrinsic->getFunctionType()->getParamType(0) });
-
-    auto op1 = intrinsic->getOperand(0);
-    auto op2 = intrinsic->getOperand(1);
-    auto call = llvm::CallInst::Create(replacement, { op1, op2 }, "");
-    call->insertAfter(instruction);
-    instruction->eraseFromParent();
-  }
+  void mutate(llvm::Instruction *instruction) override;
 
 private:
+  llvm::Intrinsic::ID from;
+  llvm::Intrinsic::ID to;
 };
 
-typedef IntrinsicReplacement<llvm::Intrinsic::sadd_with_overflow,
-                             llvm::Intrinsic::ssub_with_overflow>
-    SAddToSSub;
-typedef IntrinsicReplacement<llvm::Intrinsic::ssub_with_overflow,
-                             llvm::Intrinsic::sadd_with_overflow>
-    SSubToSAdd;
+#define INTRINSIC_REPLACEMENT(FROM, TO)                                                            \
+  class FROM##To##TO : public IntrinsicReplacement {                                               \
+  public:                                                                                          \
+    FROM##To##TO() : IntrinsicReplacement(llvm::Intrinsic::FROM, llvm::Intrinsic::TO) {}           \
+  };
 
-typedef IntrinsicReplacement<llvm::Intrinsic::sadd_sat, llvm::Intrinsic::ssub_sat> SAddSatToSSubSat;
-typedef IntrinsicReplacement<llvm::Intrinsic::ssub_sat, llvm::Intrinsic::sadd_sat> SSubSatToSAddSat;
+INTRINSIC_REPLACEMENT(sadd_with_overflow, ssub_with_overflow)
+INTRINSIC_REPLACEMENT(ssub_with_overflow, sadd_with_overflow)
+
+INTRINSIC_REPLACEMENT(sadd_sat, ssub_sat)
+INTRINSIC_REPLACEMENT(ssub_sat, sadd_sat)
 
 } // namespace irm

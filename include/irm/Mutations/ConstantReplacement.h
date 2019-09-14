@@ -16,60 +16,41 @@
 
 #pragma once
 
-#include "irm/ConstConstruction.h"
+#include "irm/ConstValues/ConstValueConstructor.h"
 #include "irm/IRMutation.h"
 #include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
+#include <memory>
 
 namespace irm {
 
-template <typename ConstValueConstruct, int value, int operandPosition>
 class ConstantReplacement : public IRMutation {
 public:
-  bool canMutate(llvm::Instruction *instruction) override {
-    assert(instruction);
-
-    if (instruction->getNumOperands() <= operandPosition) {
-      return false;
-    }
-    /// TODO: shall we also mutate allocas? it is a normal instruction with a constant value...
-    if (instruction->getOpcode() == llvm::Instruction::Alloca) {
-      return false;
-    }
-
-    auto operand = instruction->getOperand(operandPosition);
-    return llvm::isa<typename ConstValueConstruct::InstType>(operand);
-  }
-  void mutate(llvm::Instruction *instruction) override {
-    assert(instruction);
-    assert(canMutate(instruction));
-
-    using LLVMInstType = typename ConstValueConstruct::InstType;
-    using LLVMConstType = typename ConstValueConstruct::ConstType;
-    using ValueType = typename ConstValueConstruct::ValueType;
-
-    ConstValueConstructor<LLVMConstType, ValueType> constructor;
-
-    auto constant = llvm::cast<LLVMInstType>(instruction->getOperand(operandPosition));
-    uint64_t replacementValue = constant->isZero() ? value : 0;
-    auto constValue = constructor.getConstValue(ValueType(replacementValue), constant->getType());
-
-    auto replacement = LLVMInstType::get(constant->getType(), constValue);
-    instruction->setOperand(operandPosition, replacement);
-  }
+  ConstantReplacement(ConstValueConstructor__ *constConstructor,
+                      ConstValueConstructor__ *zeroConstConstructor, llvm::Value::ValueTy valueType,
+                      int operandPosition);
+  bool canMutate(llvm::Instruction *instruction) override;
+  void mutate(llvm::Instruction *instruction) override;
 
 private:
+  std::unique_ptr<ConstValueConstructor__> constConstructor;
+  std::unique_ptr<ConstValueConstructor__> zeroConstConstructor;
+  llvm::Value::ValueTy valueType;
+  int operandPosition;
 };
 
-typedef ConstantReplacement<ConstIntegerConstruct, 42, 0> ConstIntReplacement_42_0;
-typedef ConstantReplacement<ConstIntegerConstruct, 42, 1> ConstIntReplacement_42_1;
-typedef ConstantReplacement<ConstIntegerConstruct, 42, 2> ConstIntReplacement_42_2;
-typedef ConstantReplacement<ConstIntegerConstruct, 42, 3> ConstIntReplacement_42_3;
-typedef ConstantReplacement<ConstIntegerConstruct, 42, 4> ConstIntReplacement_42_4;
+class ConstIntReplacement : public ConstantReplacement {
+public:
+  ConstIntReplacement(int value, int position)
+      : ConstantReplacement(new IntValueConstructor(value), new IntValueConstructor(0),
+                            llvm::Value::ConstantIntVal, position) {}
+};
 
-typedef ConstantReplacement<ConstFloatConstruct, 42, 0> ConstFloatReplacement_42_0;
-typedef ConstantReplacement<ConstFloatConstruct, 42, 1> ConstFloatReplacement_42_1;
-typedef ConstantReplacement<ConstFloatConstruct, 42, 2> ConstFloatReplacement_42_2;
-typedef ConstantReplacement<ConstFloatConstruct, 42, 3> ConstFloatReplacement_42_3;
-typedef ConstantReplacement<ConstFloatConstruct, 42, 4> ConstFloatReplacement_42_4;
+class ConstFloatReplacement : public ConstantReplacement {
+public:
+  ConstFloatReplacement(float value, int position)
+      : ConstantReplacement(new FloatValueConstructor(value), new FloatValueConstructor(0),
+                            llvm::Value::ConstantFPVal, position) {}
+};
 
 } // namespace irm

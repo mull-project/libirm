@@ -16,46 +16,40 @@
 
 #pragma once
 
+#include "irm/ConstValues/ConstValueConstructor.h"
 #include "irm/IRMutation.h"
+#include <llvm/IR/Type.h>
+#include <memory>
 
 namespace irm {
 
-template <typename ConstValueConstruct, llvm::Type::TypeID typeID, int value>
 class StoreValueReplacement : public IRMutation {
 public:
-  bool canMutate(llvm::Instruction *instruction) override {
-    assert(instruction);
-    auto store = llvm::dyn_cast<llvm::StoreInst>(instruction);
-    if (!store) {
-      return false;
-    }
-    return store->getOperand(0)->getType()->getTypeID() == typeID;
-  }
-  void mutate(llvm::Instruction *instruction) override {
-    assert(instruction);
-    assert(canMutate(instruction));
-
-    using LLVMInstType = typename ConstValueConstruct::InstType;
-    using LLVMConstType = typename ConstValueConstruct::ConstType;
-    using ValueType = typename ConstValueConstruct::ValueType;
-
-    ConstValueConstructor<LLVMConstType, ValueType> constructor;
-
-    auto constType = instruction->getOperand(0)->getType();
-    auto constValue = constructor.getConstValue(ValueType(value), constType);
-    auto replacement = LLVMInstType::get(constType, constValue);
-
-    instruction->setOperand(0, replacement);
-  }
+  StoreValueReplacement(ConstValueConstructor__ *constConstructor, llvm::Type::TypeID typeID);
+  bool canMutate(llvm::Instruction *instruction) override;
+  void mutate(llvm::Instruction *instruction) override;
 
 private:
+  std::unique_ptr<ConstValueConstructor__> constConstructor;
+  llvm::Type::TypeID typeID;
 };
 
-typedef StoreValueReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 42>
-    StoreIntReplacement_42;
-typedef StoreValueReplacement<ConstFloatConstruct, llvm::Type::FloatTyID, 42>
-    StoreFloatReplacement_42;
-typedef StoreValueReplacement<ConstDoubleConstruct, llvm::Type::DoubleTyID, 42>
-    StoreDoubleReplacement_42;
+class StoreIntReplacement : public StoreValueReplacement {
+public:
+  explicit StoreIntReplacement(int value)
+      : StoreValueReplacement(new IntValueConstructor(value), llvm::Type::IntegerTyID) {}
+};
+
+class StoreFloatReplacement : public StoreValueReplacement {
+public:
+  explicit StoreFloatReplacement(float value)
+      : StoreValueReplacement(new FloatValueConstructor(value), llvm::Type::FloatTyID) {}
+};
+
+class StoreDoubleReplacement : public StoreValueReplacement {
+public:
+  explicit StoreDoubleReplacement(double value)
+      : StoreValueReplacement(new DoubleValueConstructor(value), llvm::Type::DoubleTyID) {}
+};
 
 } // namespace irm

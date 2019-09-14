@@ -22,9 +22,7 @@
 using namespace irm;
 
 TEST(CmpInstPredicateReplacement, canMutate) {
-  using Mutator = CmpInstPredicateReplacement<llvm::CmpInst::ICmp,
-                                              llvm::CmpInst::ICMP_EQ,
-                                              llvm::CmpInst::ICMP_NE>;
+  using Mutator = ICMP_EQToICMP_NE;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
@@ -46,9 +44,7 @@ TEST(CmpInstPredicateReplacement, canMutate) {
 }
 
 TEST(CmpInstPredicateReplacement, mutate) {
-  using Mutator = CmpInstPredicateReplacement<llvm::Instruction::ICmp,
-                                              llvm::CmpInst::ICMP_EQ,
-                                              llvm::CmpInst::ICMP_NE>;
+  using Mutator = ICMP_EQToICMP_NE;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);

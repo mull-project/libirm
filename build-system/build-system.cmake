@@ -1,3 +1,3 @@
-include(build-system/compilation-flags.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/compilation-flags.cmake)
 
-include(build-system/vendor/vendor.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/vendor/vendor.cmake)

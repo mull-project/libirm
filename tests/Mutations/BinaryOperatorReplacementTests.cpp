@@ -21,7 +21,7 @@
 using namespace irm;
 
 TEST(BinaryOperatorReplacement, canMutate) {
-  using Mutator = BinaryOperatorReplacement<llvm::Instruction::Add, llvm::Instruction::Sub>;
+  using Mutator = AddToSub;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
@@ -40,7 +40,7 @@ TEST(BinaryOperatorReplacement, canMutate) {
 }
 
 TEST(BinaryOperatorReplacement, mutate) {
-  using Mutator = BinaryOperatorReplacement<llvm::Instruction::Add, llvm::Instruction::Sub>;
+  using Mutator = AddToSub;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);

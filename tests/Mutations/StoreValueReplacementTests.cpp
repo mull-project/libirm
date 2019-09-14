@@ -22,8 +22,6 @@
 using namespace irm;
 
 TEST(StoreValueReplacement, canMutate) {
-  using Mutator = StoreValueReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 0>;
-
   llvm::LLVMContext context;
   auto voidType = llvm::Type::getVoidTy(context);
   auto intType = llvm::Type::getInt16Ty(context);
@@ -37,14 +35,12 @@ TEST(StoreValueReplacement, canMutate) {
   auto store = new llvm::StoreInst(value, address, "", basicBlock);
   auto load = new llvm::LoadInst(intType, address, "", basicBlock);
 
-  Mutator mutator;
+  StoreIntReplacement mutator(0);
   ASSERT_TRUE(mutator.canMutate(store));
   ASSERT_FALSE(mutator.canMutate(load));
 }
 
 TEST(StoreValueReplacement, mutate) {
-  using Mutator = StoreValueReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 0>;
-
   llvm::LLVMContext context;
   auto voidType = llvm::Type::getVoidTy(context);
   auto intType = llvm::Type::getInt16Ty(context);
@@ -60,7 +56,7 @@ TEST(StoreValueReplacement, mutate) {
   auto originalValue = llvm::dyn_cast<llvm::ConstantInt>(store->getOperand(0));
   ASSERT_FALSE(originalValue->isZero());
 
-  Mutator mutator;
+  StoreIntReplacement mutator(0);
   mutator.mutate(store);
 
   auto mutatedValue = llvm::dyn_cast<llvm::ConstantInt>(store->getOperand(0));

@@ -21,7 +21,7 @@
 using namespace irm;
 
 TEST(CallReplacement, canMutate) {
-  using Mutator = CallReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 0>;
+  using Mutator = IntCallReplacement;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
@@ -41,13 +41,13 @@ TEST(CallReplacement, canMutate) {
   auto callInt = llvm::CallInst::Create(intFunction, {}, "", basicBlock);
   auto callFloat = llvm::CallInst::Create(floatFunction, {}, "", basicBlock);
 
-  Mutator mutator;
+  Mutator mutator(0);
   ASSERT_TRUE(mutator.canMutate(callInt));
   ASSERT_FALSE(mutator.canMutate(callFloat));
 }
 
 TEST(CallReplacement, mutate) {
-  using Mutator = CallReplacement<ConstIntegerConstruct, llvm::Type::IntegerTyID, 15>;
+  using Mutator = IntCallReplacement;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
@@ -63,7 +63,7 @@ TEST(CallReplacement, mutate) {
   auto callInt = llvm::CallInst::Create(intFunction, {}, "", basicBlock);
   auto retInst = llvm::ReturnInst::Create(context, callInt, basicBlock);
 
-  Mutator mutator;
+  Mutator mutator(15);
   mutator.mutate(callInt);
 
   auto constant = llvm::dyn_cast<llvm::ConstantInt>(retInst->getOperand(0));

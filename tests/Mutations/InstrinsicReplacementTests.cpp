@@ -25,9 +25,6 @@
 using namespace irm;
 
 TEST(IntrinsicReplacement, canMutate) {
-  using Mutator = IntrinsicReplacement<llvm::Intrinsic::sadd_with_overflow,
-                                       llvm::Intrinsic::ssub_with_overflow>;
-
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
@@ -47,15 +44,12 @@ TEST(IntrinsicReplacement, canMutate) {
   auto callSAdd = llvm::CallInst::Create(sadd, { op1, op2 }, "", basicBlock);
   auto callSSub = llvm::CallInst::Create(ssub, { op1, op2 }, "", basicBlock);
 
-  Mutator mutator;
+  sadd_with_overflowTossub_with_overflow mutator;
   ASSERT_TRUE(mutator.canMutate(callSAdd));
   ASSERT_FALSE(mutator.canMutate(callSSub));
 }
 
 TEST(IntrinsicReplacement, mutate) {
-  using Mutator = IntrinsicReplacement<llvm::Intrinsic::sadd_with_overflow,
-                                       llvm::Intrinsic::ssub_with_overflow>;
-
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
@@ -72,7 +66,7 @@ TEST(IntrinsicReplacement, mutate) {
 
   auto callSad = llvm::CallInst::Create(sadd, { op1, op2 }, "", basicBlock);
 
-  Mutator mutator;
+  sadd_with_overflowTossub_with_overflow mutator;
   mutator.mutate(callSad);
 
   auto ssub = llvm::dyn_cast<llvm::IntrinsicInst>(&basicBlock->front());

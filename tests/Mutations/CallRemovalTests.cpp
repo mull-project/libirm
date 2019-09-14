@@ -21,8 +21,8 @@
 using namespace irm;
 
 TEST(CallRemoval, canMutate) {
-  using MutatorNoIntrinsics = CallRemoval<false>;
-  using MutatorOnlyIntrinsics = CallRemoval<true>;
+  using MutatorNoIntrinsics = RemoveVoidFunctionCall;
+  using MutatorOnlyIntrinsics = RemoveVoidIntrinsicsCall;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
@@ -57,7 +57,7 @@ TEST(CallRemoval, canMutate) {
 }
 
 TEST(CallRemoval, mutate) {
-  using Mutator = CallRemoval<false>;
+  using Mutator = RemoveVoidFunctionCall;
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
