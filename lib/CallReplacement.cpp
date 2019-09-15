@@ -30,8 +30,11 @@ bool CallReplacement::canMutate(llvm::Instruction *instruction) {
     return false;
   }
   llvm::CallSite call(instruction);
+  /// Do not touch indirect calls
+  if (!call.getCalledFunction()) {
+    return false;
+  }
   /// Do not touch intrinsics
-  assert(call.getCalledFunction());
   if (call.getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::ID(0)) {
     return false;
   }
