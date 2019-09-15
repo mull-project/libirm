@@ -21,6 +21,7 @@
 #include <llvm/IR/IntrinsicInst.h>
 #include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/Module.h>
+#include "TestLLVMCompatibility.h"
 
 using namespace irm;
 
@@ -28,8 +29,7 @@ TEST(IntrinsicReplacement, canMutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function =
-      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(functionType, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intrinsicType = llvm::Type::getInt8Ty(context);
@@ -53,8 +53,7 @@ TEST(IntrinsicReplacement, mutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function =
-      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(functionType, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intrinsicType = llvm::Type::getInt8Ty(context);

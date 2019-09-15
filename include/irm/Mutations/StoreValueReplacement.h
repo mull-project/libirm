@@ -25,12 +25,12 @@ namespace irm {
 
 class StoreValueReplacement : public IRMutation {
 public:
-  StoreValueReplacement(ConstValueConstructor__ *constConstructor, llvm::Type::TypeID typeID);
+  StoreValueReplacement(ConstValueConstructor *constConstructor, llvm::Type::TypeID typeID);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
 
 private:
-  std::unique_ptr<ConstValueConstructor__> constConstructor;
+  std::unique_ptr<ConstValueConstructor> constConstructor;
   llvm::Type::TypeID typeID;
 };
 
@@ -43,13 +43,13 @@ public:
 class StoreFloatReplacement : public StoreValueReplacement {
 public:
   explicit StoreFloatReplacement(float value)
-      : StoreValueReplacement(new FloatValueConstructor(value), llvm::Type::FloatTyID) {}
+      : StoreValueReplacement(new FloatingValueConstructor(value), llvm::Type::FloatTyID) {}
 };
 
 class StoreDoubleReplacement : public StoreValueReplacement {
 public:
   explicit StoreDoubleReplacement(double value)
-      : StoreValueReplacement(new DoubleValueConstructor(value), llvm::Type::DoubleTyID) {}
+      : StoreValueReplacement(new FloatingValueConstructor(value), llvm::Type::DoubleTyID) {}
 };
 
 } // namespace irm

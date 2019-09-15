@@ -44,7 +44,7 @@ private:
 INTRINSIC_REPLACEMENT(sadd_with_overflow, ssub_with_overflow)
 INTRINSIC_REPLACEMENT(ssub_with_overflow, sadd_with_overflow)
 
-INTRINSIC_REPLACEMENT(sadd_sat, ssub_sat)
-INTRINSIC_REPLACEMENT(ssub_sat, sadd_sat)
+//INTRINSIC_REPLACEMENT(sadd_sat, ssub_sat)
+//INTRINSIC_REPLACEMENT(ssub_sat, sadd_sat)
 
 } // namespace irm

@@ -19,7 +19,7 @@
 
 using namespace irm;
 
-StoreValueReplacement::StoreValueReplacement(ConstValueConstructor__ *constConstructor,
+StoreValueReplacement::StoreValueReplacement(ConstValueConstructor *constConstructor,
                                              llvm::Type::TypeID typeID)
     : constConstructor(constConstructor), typeID(typeID) {}
 

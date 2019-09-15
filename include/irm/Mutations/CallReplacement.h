@@ -25,12 +25,12 @@ namespace irm {
 
 class CallReplacement : public IRMutation {
 public:
-  CallReplacement(ConstValueConstructor__ *constConstructor, llvm::Type::TypeID returnTypeId);
+  CallReplacement(ConstValueConstructor *constConstructor, llvm::Type::TypeID returnTypeId);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
 
 private:
-  std::unique_ptr<ConstValueConstructor__> constConstructor;
+  std::unique_ptr<ConstValueConstructor> constConstructor;
   llvm::Type::TypeID returnTypeId;
 };
 
@@ -43,13 +43,13 @@ public:
 class FloatCallReplacement : public CallReplacement {
 public:
   explicit FloatCallReplacement(float value)
-      : CallReplacement(new FloatValueConstructor(value), llvm::Type::FloatTyID) {}
+      : CallReplacement(new FloatingValueConstructor(value), llvm::Type::FloatTyID) {}
 };
 
 class DoubleCallReplacement : public CallReplacement {
 public:
   explicit DoubleCallReplacement(double value)
-      : CallReplacement(new DoubleValueConstructor(value), llvm::Type::DoubleTyID) {}
+      : CallReplacement(new FloatingValueConstructor(value), llvm::Type::DoubleTyID) {}
 };
 
 } // namespace irm
