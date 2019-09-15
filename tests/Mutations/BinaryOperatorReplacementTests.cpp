@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/Module.h>
+#include "TestLLVMCompatibility.h"
 
 using namespace irm;
 
@@ -26,7 +27,7 @@ TEST(BinaryOperatorReplacement, canMutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto op1 = llvm::ConstantInt::get(llvm::IntegerType::get(context, 8), 5, false);
@@ -45,7 +46,7 @@ TEST(BinaryOperatorReplacement, mutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto op1 = llvm::ConstantInt::get(llvm::IntegerType::get(context, 8), 5, false);

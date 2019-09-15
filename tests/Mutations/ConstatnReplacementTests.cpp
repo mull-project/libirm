@@ -14,6 +14,7 @@
 //  limitations under the License.
 //
 
+#include "TestLLVMCompatibility.h"
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/Module.h>
@@ -24,7 +25,7 @@ TEST(ConstantReplacement, canMutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto op1 = llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 5, false);
@@ -49,12 +50,11 @@ TEST(ConstantReplacement, canMutate_severalOperands) {
   auto floatType = llvm::Type::getFloatTy(context);
 
   auto type = llvm::FunctionType::get(voidType, false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto functionType = llvm::FunctionType::get(voidType, { intType, floatType }, false);
-  auto calledFunction =
-      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "", module);
+  auto calledFunction = test_llvm_compat::internalFunction(functionType, "", module);
 
   auto op1 = llvm::ConstantInt::get(intType, 5, false);
   auto op2 = llvm::ConstantFP::get(floatType, 40);
@@ -78,12 +78,11 @@ TEST(ConstantReplacement, mutate_int) {
   auto floatType = llvm::Type::getFloatTy(context);
 
   auto type = llvm::FunctionType::get(voidType, false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto functionType = llvm::FunctionType::get(voidType, { intType, floatType }, false);
-  auto calledFunction =
-      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "", module);
+  auto calledFunction = test_llvm_compat::internalFunction(functionType, "", module);
 
   auto op1NonZero = llvm::ConstantInt::get(intType, 5, false);
   auto op2NonZero = llvm::ConstantFP::get(floatType, 40);
@@ -114,12 +113,11 @@ TEST(ConstantReplacement, mutate_float) {
   auto floatType = llvm::Type::getFloatTy(context);
 
   auto type = llvm::FunctionType::get(voidType, false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto functionType = llvm::FunctionType::get(voidType, { intType, floatType }, false);
-  auto calledFunction =
-      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "", module);
+  auto calledFunction = test_llvm_compat::internalFunction(functionType, "", module);
 
   auto op1NonZero = llvm::ConstantInt::get(intType, 5, false);
   auto op2NonZero = llvm::ConstantFP::get(floatType, 40);

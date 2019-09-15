@@ -34,7 +34,8 @@ bool VoidCallRemoval::canMutate(llvm::Instruction *instruction) {
     return false;
   }
 
-  bool isIntrinsic = call.getIntrinsicID() != llvm::Intrinsic::not_intrinsic;
+  assert(call.getCalledFunction());
+  bool isIntrinsic = call.getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::not_intrinsic;
   if (onlyIntrinsics) {
     return isIntrinsic;
   }

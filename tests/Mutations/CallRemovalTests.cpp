@@ -14,6 +14,7 @@
 //  limitations under the License.
 //
 
+#include "TestLLVMCompatibility.h"
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/Module.h>
@@ -26,18 +27,17 @@ TEST(CallRemoval, canMutate) {
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
-  auto linkage = llvm::Function::InternalLinkage;
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = llvm::Function::Create(functionType, linkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(functionType, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intType = llvm::Type::getInt8Ty(context);
   auto intFunctionType = llvm::FunctionType::get(intType, false);
-  auto intFunction = llvm::Function::Create(intFunctionType, linkage, "call_int", module);
+  auto intFunction = test_llvm_compat::internalFunction(intFunctionType, "call_int", module);
 
   auto voidType = llvm::Type::getVoidTy(context);
   auto voidFunctionType = llvm::FunctionType::get(voidType, false);
-  auto voidFunction = llvm::Function::Create(voidFunctionType, linkage, "call_void", module);
+  auto voidFunction = test_llvm_compat::internalFunction(voidFunctionType, "call_void", module);
 
   auto intrinsicFunction = llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::vastart);
 
@@ -61,14 +61,14 @@ TEST(CallRemoval, mutate) {
 
   llvm::LLVMContext context;
   llvm::Module module("test", context);
-  auto linkage = llvm::Function::InternalLinkage;
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = llvm::Function::Create(functionType, linkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(functionType, "test", module);
+
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto voidType = llvm::Type::getVoidTy(context);
   auto voidFunctionType = llvm::FunctionType::get(voidType, false);
-  auto voidFunction = llvm::Function::Create(voidFunctionType, linkage, "call_void", module);
+  auto voidFunction = test_llvm_compat::internalFunction(voidFunctionType, "call_void", module);
 
   auto callVoid = llvm::CallInst::Create(voidFunction, {}, "", basicBlock);
 

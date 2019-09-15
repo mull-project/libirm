@@ -14,20 +14,19 @@
 //  limitations under the License.
 //
 
-#include "irm/ConstValues/ConstValueConstructor.h"
-#include <llvm/IR/Constants.h>
+#pragma once
 
-using namespace irm;
+#include <llvm/IR/Function.h>
 
-FloatingValueConstructor::FloatingValueConstructor(double value) : constantValue(value) {}
+namespace test_llvm_compat {
 
-llvm::Value *FloatingValueConstructor::constructValue(llvm::Type *type) {
-  return llvm::ConstantFP::get(type, constantValue);
+static llvm::Function *internalFunction(llvm::FunctionType *functionType, const llvm::Twine &name,
+                                        llvm::Module &module) {
+#if LLVM_VERSION_MAJOR < 8
+  return llvm::Function::Create(functionType, llvm::Function::InternalLinkage, name, &module);
+#else
+  return llvm::Function::Create(functionType, llvm::Function::InternalLinkage, name, module);
+#endif
 }
 
-IntValueConstructor::IntValueConstructor(int value) : constantValue(value) {}
-
-llvm::Value *IntValueConstructor::constructValue(llvm::Type *type) {
-  llvm::APInt intValue(type->getIntegerBitWidth(), constantValue);
-  return llvm::ConstantInt::get(type, intValue);
-}
+} // namespace test_llvm_compat

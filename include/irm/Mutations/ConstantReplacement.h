@@ -26,15 +26,15 @@ namespace irm {
 
 class ConstantReplacement : public IRMutation {
 public:
-  ConstantReplacement(ConstValueConstructor__ *constConstructor,
-                      ConstValueConstructor__ *zeroConstConstructor, llvm::Value::ValueTy valueType,
+  ConstantReplacement(ConstValueConstructor *constConstructor,
+                      ConstValueConstructor *zeroConstConstructor, llvm::Value::ValueTy valueType,
                       int operandPosition);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
 
 private:
-  std::unique_ptr<ConstValueConstructor__> constConstructor;
-  std::unique_ptr<ConstValueConstructor__> zeroConstConstructor;
+  std::unique_ptr<ConstValueConstructor> constConstructor;
+  std::unique_ptr<ConstValueConstructor> zeroConstConstructor;
   llvm::Value::ValueTy valueType;
   int operandPosition;
 };
@@ -49,7 +49,7 @@ public:
 class ConstFloatReplacement : public ConstantReplacement {
 public:
   ConstFloatReplacement(float value, int position)
-      : ConstantReplacement(new FloatValueConstructor(value), new FloatValueConstructor(0),
+      : ConstantReplacement(new FloatingValueConstructor(value), new FloatingValueConstructor(0),
                             llvm::Value::ConstantFPVal, position) {}
 };
 

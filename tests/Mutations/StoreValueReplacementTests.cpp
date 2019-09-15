@@ -18,6 +18,7 @@
 #include <irm/irm.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
+#include "TestLLVMCompatibility.h"
 
 using namespace irm;
 
@@ -27,7 +28,7 @@ TEST(StoreValueReplacement, canMutate) {
   auto intType = llvm::Type::getInt16Ty(context);
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(voidType, false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto value = llvm::ConstantInt::get(intType, 5, false);
@@ -46,7 +47,7 @@ TEST(StoreValueReplacement, mutate) {
   auto intType = llvm::Type::getInt16Ty(context);
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(voidType, false);
-  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto function = test_llvm_compat::internalFunction(type, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto value = llvm::ConstantInt::get(intType, 5, false);

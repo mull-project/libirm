@@ -9,4 +9,5 @@ set (SOURCES
 )
 add_executable(irm-tests ${SOURCES})
 target_link_libraries(irm-tests irm google-test)
-target_include_directories(irm-tests PRIVATE ${CMAKE_SOURCE_DIR}/include ${LLVM_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(irm-tests SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/include ${LLVM_INCLUDE_DIRS})
+target_include_directories(irm-tests PRIVATE ${CMAKE_CURRENT_LIST_DIR})

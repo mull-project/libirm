@@ -22,31 +22,23 @@ class Type;
 } // namespace llvm
 
 namespace irm {
-class ConstValueConstructor__ {
+
+class ConstValueConstructor {
 public:
   virtual llvm::Value *constructValue(llvm::Type *type) = 0;
-  virtual ~ConstValueConstructor__() = default;
+  virtual ~ConstValueConstructor() = default;
 };
 
-class FloatValueConstructor : public ConstValueConstructor__ {
+class FloatingValueConstructor : public ConstValueConstructor {
 public:
-  explicit FloatValueConstructor(float value);
-  llvm::Value *constructValue(llvm::Type *type) override;
-
-private:
-  float constantValue;
-};
-
-class DoubleValueConstructor : public ConstValueConstructor__ {
-public:
-  explicit DoubleValueConstructor(double value);
+  explicit FloatingValueConstructor(double value);
   llvm::Value *constructValue(llvm::Type *type) override;
 
 private:
   double constantValue;
 };
 
-class IntValueConstructor : public ConstValueConstructor__ {
+class IntValueConstructor : public ConstValueConstructor {
 public:
   explicit IntValueConstructor(int value);
   llvm::Value *constructValue(llvm::Type *type) override;

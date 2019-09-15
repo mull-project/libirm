@@ -20,7 +20,7 @@
 
 using namespace irm;
 
-CallReplacement::CallReplacement(ConstValueConstructor__ *constConstructor,
+CallReplacement::CallReplacement(ConstValueConstructor *constConstructor,
                                  llvm::Type::TypeID returnTypeId)
     : constConstructor(constConstructor), returnTypeId(returnTypeId) {}
 
@@ -31,7 +31,8 @@ bool CallReplacement::canMutate(llvm::Instruction *instruction) {
   }
   llvm::CallSite call(instruction);
   /// Do not touch intrinsics
-  if (call.getIntrinsicID() != llvm::Intrinsic::ID(0)) {
+  assert(call.getCalledFunction());
+  if (call.getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::ID(0)) {
     return false;
   }
   assert(call.getFunctionType());
