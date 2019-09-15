@@ -28,7 +28,10 @@ bool VoidCallRemoval::canMutate(llvm::Instruction *instruction) {
     return false;
   }
   llvm::CallSite call(instruction);
-  assert(call.getFunctionType());
+  /// Do not touch indirect calls
+  if (!call.getCalledFunction()) {
+    return false;
+  }
   assert(call.getFunctionType()->getReturnType());
   if (call.getFunctionType()->getReturnType()->getTypeID() != llvm::Type::VoidTyID) {
     return false;
