@@ -4,7 +4,7 @@ if (TARGET google-test)
 endif()
 
 function(enable_google_test)
-  set (google_test_dir ${CMAKE_SOURCE_DIR}/vendor/googletest/googletest)
+  set (google_test_dir ${PROJECT_SOURCE_DIR}/vendor/googletest/googletest)
 
   file(GLOB_RECURSE headers ${google_test_dir}/*.h)
 
