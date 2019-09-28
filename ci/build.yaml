@@ -20,7 +20,7 @@
         CXX: "{{ llvm_dir }}/bin/clang++"
 
     - name: Build libirm (Debug)
-      command: make all -j {{ ansible_processor_vcpus }}
+      command: make all irm-tests -j {{ ansible_processor_vcpus }}
       args:
         chdir: "{{ debug_build_dir }}"
 
@@ -42,7 +42,7 @@
         CXX: "{{ llvm_dir }}/bin/clang++"
 
     - name: Build libirm (Release)
-      command: make all -j {{ ansible_processor_vcpus }}
+      command: make all irm-tests -j {{ ansible_processor_vcpus }}
       args:
         chdir: "{{ release_build_dir }}"
 

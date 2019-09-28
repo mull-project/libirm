@@ -21,7 +21,7 @@ using namespace irm;
 
 ConstantReplacement::ConstantReplacement(ConstValueConstructor *constConstructor,
                                          ConstValueConstructor *zeroConstConstructor,
-                                         llvm::Value::ValueTy valueType, int operandPosition)
+                                         llvm::Value::ValueTy valueType, unsigned operandPosition)
     : constConstructor(constConstructor), zeroConstConstructor(zeroConstConstructor),
       valueType(valueType), operandPosition(operandPosition) {}
 

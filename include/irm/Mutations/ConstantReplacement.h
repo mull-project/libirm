@@ -28,7 +28,7 @@ class ConstantReplacement : public IRMutation {
 public:
   ConstantReplacement(ConstValueConstructor *constConstructor,
                       ConstValueConstructor *zeroConstConstructor, llvm::Value::ValueTy valueType,
-                      int operandPosition);
+                      unsigned operandPosition);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
 
@@ -36,19 +36,19 @@ private:
   std::unique_ptr<ConstValueConstructor> constConstructor;
   std::unique_ptr<ConstValueConstructor> zeroConstConstructor;
   llvm::Value::ValueTy valueType;
-  int operandPosition;
+  unsigned operandPosition;
 };
 
 class ConstIntReplacement : public ConstantReplacement {
 public:
-  ConstIntReplacement(int value, int position)
+  ConstIntReplacement(int value, unsigned position)
       : ConstantReplacement(new IntValueConstructor(value), new IntValueConstructor(0),
                             llvm::Value::ConstantIntVal, position) {}
 };
 
 class ConstFloatReplacement : public ConstantReplacement {
 public:
-  ConstFloatReplacement(float value, int position)
+  ConstFloatReplacement(float value, unsigned position)
       : ConstantReplacement(new FloatingValueConstructor(value), new FloatingValueConstructor(0),
                             llvm::Value::ConstantFPVal, position) {}
 };
