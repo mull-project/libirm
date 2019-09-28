@@ -4,13 +4,19 @@ if (TARGET LLVMCore)
 endif()
 
 if (NOT PATH_TO_LLVM)
-  message(FATAL_ERROR "
-  The cmake is supposed to be called with PATH_TO_LLVM pointing to
- a precompiled version of LLVM or to to the source code of LLVM
+  message("-- Looking for LLVM")
+  find_package(LLVM CONFIG)
+  if (LLVM_FOUND)
+    message("-- Found LLVM ${LLVM_VERSION}")
+    return()
+  else()
+  message(FATAL_ERROR " 
+ You can specify full path to your LLVM installation or to the source code.
  Examples:
- cmake -G \"${CMAKE_GENERATOR}\" -DPATH_TO_LLVM=/opt/llvm-3.9.0 ${CMAKE_SOURCE_DIR}
- cmake -G \"${CMAKE_GENERATOR}\" -DPATH_TO_LLVM=/opt/llvm/source ${CMAKE_SOURCE_DIR}
+     cmake -G \"${CMAKE_GENERATOR}\" -DPATH_TO_LLVM=/opt/llvm-3.9.0 ${CMAKE_SOURCE_DIR}
+     cmake -G \"${CMAKE_GENERATOR}\" -DPATH_TO_LLVM=/opt/llvm/source ${CMAKE_SOURCE_DIR}
 ")
+  endif()
 endif()
 
 if (NOT IS_ABSOLUTE ${PATH_TO_LLVM})
