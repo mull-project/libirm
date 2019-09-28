@@ -64,7 +64,7 @@ private:
                                       llvm::CmpInst::TO) {}                                        \
   };
 
-#pragma mark - Negation
+/// Negation
 
 // == / !=
 FCMP_PREDICATE_REPLACEMENT(FCMP_OEQ, FCMP_ONE)
@@ -104,7 +104,7 @@ ICMP_PREDICATE_REPLACEMENT(ICMP_ULT, ICMP_UGE)
 FCMP_PREDICATE_REPLACEMENT(FCMP_TRUE, FCMP_FALSE)
 FCMP_PREDICATE_REPLACEMENT(FCMP_FALSE, FCMP_TRUE)
 
-#pragma mark - Boundary change
+/// Boundary change
 
 ///  >  | >=
 FCMP_PREDICATE_REPLACEMENT(FCMP_UGT, FCMP_UGE)
