@@ -1,5 +1,5 @@
 //
-//  Copyright 2019 Alex Denisov
+//  Copyright 2019 Mull Project
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -14,13 +14,23 @@
 //  limitations under the License.
 //
 
-#pragma once
-
-#include "irm/Mutations/BinaryOperatorReplacement.h"
-#include "irm/Mutations/CallReplacement.h"
-#include "irm/Mutations/CmpInstPredicateReplacement.h"
-#include "irm/Mutations/ConstantReplacement.h"
-#include "irm/Mutations/IntrinsicReplacement.h"
-#include "irm/Mutations/StoreValueReplacement.h"
 #include "irm/Mutations/SwapBinaryOperands.h"
-#include "irm/Mutations/VoidCallRemoval.h"
+
+using namespace irm;
+
+SwapBinaryOperands::SwapBinaryOperands(llvm::Instruction::BinaryOps op) : op(op) {}
+
+bool SwapBinaryOperands::canMutate(llvm::Instruction *instruction) {
+  return instruction->getOpcode() == op;
+}
+
+void SwapBinaryOperands::mutate(llvm::Instruction *instruction) {
+  assert(canMutate(instruction));
+  assert(instruction->getParent());
+  assert(instruction->getNumOperands() == 2);
+
+  auto lhs = instruction->getOperand(0);
+  auto rhs = instruction->getOperand(1);
+  instruction->setOperand(0, rhs);
+  instruction->setOperand(1, lhs);
+}
