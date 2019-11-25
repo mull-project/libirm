@@ -73,6 +73,29 @@ irm::BinaryOperatorReplacement addToXor(llvm::Instruction::BinaryOps::Add,
 
 This will yield the `add i32 %a, i32 %b` to `xor i32 %a, i32 %b` mutation.
 
+### SwapBinaryOperands
+
+```c++
+SwapBinaryOperands(llvm::Instruction::BinaryOps op)
+```
+
+Swaps operands of a binary operator(`op`).
+
+Examples:
+
+ - `irm::SwapSubOperands`: `sub i32 %a, i32 %b` -> `sub i32 %b, i32 %a`
+ - `irm::SwapSDivOperands`: `sdiv i32 %a, i32 %b` -> `sdiv i32 %b, i32 %a`
+
+You can find the list of predefined mutations at [`SwapBinaryOperands.h`](include/irm/Mutations/SwapBinaryOperands.h).
+
+You can also create any missing mutation manually:
+
+```c++
+irm::SwapBinaryOperands swapSub(llvm::Instruction::BinaryOps::Sub);
+```
+
+This will yield the `sub i32 %a, i32 %b` to `sub i32 %b, i32 %a` mutation.
+
 ### CallReplacement
 
 ```c++

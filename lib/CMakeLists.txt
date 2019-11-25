@@ -6,6 +6,7 @@ set (SOURCES
   ConstValueConstructor.cpp
   IntrinsicReplacement.cpp
   StoreValueReplacement.cpp
+  SwapBinaryOperands.cpp
   VoidCallRemoval.cpp
 )
 
