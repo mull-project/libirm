@@ -1,4 +1,4 @@
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Werror")
 if (LIBIRM_BUILD_32_BITS)
   set (CMAKE_CXX_FLAGS -m32 ${CMAKE_CXX_FLAGS})
 endif()
