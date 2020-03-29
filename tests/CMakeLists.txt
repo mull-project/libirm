@@ -5,6 +5,7 @@ set (SOURCES
   Mutations/CmpInstPredicateReplacementTests.cpp
   Mutations/ConstatnReplacementTests.cpp
   Mutations/InstrinsicReplacementTests.cpp
+  Mutations/NegateXORReplacementTests.cpp
   Mutations/StoreValueReplacementTests.cpp
   Mutations/SwapBinaryOperandsTests.cpp
 )

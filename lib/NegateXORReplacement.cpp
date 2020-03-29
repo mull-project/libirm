@@ -1,0 +1,52 @@
+//
+//  Copyright 2020 Mull Project
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+#include "irm/Mutations/NegateXORReplacement.h"
+#include <llvm/IR/InstrTypes.h>
+
+using namespace irm;
+
+NegateXORReplacement::NegateXORReplacement() {}
+
+bool NegateXORReplacement::canMutate(llvm::Instruction *instruction) {
+  assert(instruction);
+  if (instruction->getOpcode() != llvm::Instruction::Xor) {
+    return false;
+  }
+
+  return true;
+}
+
+void NegateXORReplacement::mutate(llvm::Instruction *instruction) {
+  assert(instruction);
+  assert(canMutate(instruction));
+
+  /// Negating XOR means: "x ^ y" -> "x ^ !y".
+  /// Our goal below is to add a NOT instruction to negate Y, however in LLVM,
+  /// adding a "NOT x" instruction is implemented as doing "XOR x, true" (see the
+  /// source code of llvm::BinaryOperator::CreateNot.
+  ///
+  /// Example:
+  /// entry:
+  /// %xor = xor i1 true, false
+  /// becomes:
+  /// entry:
+  /// %not = xor i1 false, true
+  /// %xor = xor i1 true, %not
+  auto rhs = instruction->getOperand(1);
+  auto notInstruction = llvm::BinaryOperator::CreateNot(rhs, "not", instruction);
+  instruction->setOperand(1, notInstruction);
+}
