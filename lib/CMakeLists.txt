@@ -5,6 +5,7 @@ set (SOURCES
   ConstantReplacement.cpp
   ConstValueConstructor.cpp
   IntrinsicReplacement.cpp
+  NegateXORReplacement.cpp
   StoreValueReplacement.cpp
   SwapBinaryOperands.cpp
   VoidCallRemoval.cpp
