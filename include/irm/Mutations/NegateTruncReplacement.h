@@ -1,5 +1,5 @@
 //
-//  Copyright 2019 Alex Denisov
+//  Copyright 2020 Mull Project
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
 
 #pragma once
 
-#include "irm/Mutations/BinaryOperatorReplacement.h"
-#include "irm/Mutations/CallReplacement.h"
-#include "irm/Mutations/CmpInstPredicateReplacement.h"
-#include "irm/Mutations/ConstantReplacement.h"
-#include "irm/Mutations/IntrinsicReplacement.h"
-#include "irm/Mutations/NegateTruncReplacement.h"
-#include "irm/Mutations/NegateXORReplacement.h"
-#include "irm/Mutations/StoreValueReplacement.h"
-#include "irm/Mutations/SwapBinaryOperands.h"
-#include "irm/Mutations/VoidCallRemoval.h"
+#include "irm/IRMutation.h"
+
+namespace irm {
+
+class NegateTruncReplacement : public IRMutation {
+public:
+  NegateTruncReplacement();
+  bool canMutate(llvm::Instruction *instruction) override;
+  void mutate(llvm::Instruction *instruction) override;
+
+};
+
+} // namespace irm
