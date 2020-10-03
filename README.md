@@ -96,6 +96,21 @@ irm::SwapBinaryOperands swapSub(llvm::Instruction::BinaryOps::Sub);
 
 This will yield the `sub i32 %a, i32 %b` to `sub i32 %b, i32 %a` mutation.
 
+### SwapInstructionWithOperand
+
+```c++
+SwapInstructionWithOperand(unsigned opcode, unsigned index);
+```
+
+Replaces all uses of the instruction of kind `opcode` with its `index` operand.
+
+Examples:
+
+ - `irm::SwapAddWithOperand_0`: `add i32 %a, i32 %b` -> `%a`
+ - `irm::SwapFNegWithOperand`: `fneg float %a` -> `%a`
+
+You can find the list of predefined mutations at [`SwapInstructionWithOperand.h`](include/irm/Mutations/SwapInstructionWithOperand.h).
+
 ### CallReplacement
 
 ```c++

@@ -9,6 +9,7 @@ set (SOURCES
   Mutations/NegateXORReplacementTests.cpp
   Mutations/StoreValueReplacementTests.cpp
   Mutations/SwapBinaryOperandsTests.cpp
+  Mutations/SwapInstructionWithOperandTests.cpp
 )
 add_executable(irm-tests EXCLUDE_FROM_ALL ${SOURCES})
 target_link_libraries(irm-tests irm google-test)

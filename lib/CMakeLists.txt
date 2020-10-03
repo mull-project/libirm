@@ -9,6 +9,7 @@ set (SOURCES
   NegateXORReplacement.cpp
   StoreValueReplacement.cpp
   SwapBinaryOperands.cpp
+  SwapInstructionWithOperand.cpp
   VoidCallRemoval.cpp
 )
 
