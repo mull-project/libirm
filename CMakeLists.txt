@@ -12,5 +12,12 @@ option(LIBIRM_BUILD_32_BITS "Enable 32 bits build" OFF)
 
 include(build-system/build-system.cmake)
 
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  include(CTest)
+endif()
+
 add_subdirectory(lib)
-add_subdirectory(tests)
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
