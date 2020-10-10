@@ -14,7 +14,7 @@ function(enable_google_test)
     )
 
   add_library(google-test STATIC EXCLUDE_FROM_ALL ${headers} ${sources})
-  target_compile_options(google-test PRIVATE ${CFG_CXX_FLAGS})
+  target_compile_options(google-test PRIVATE ${LIBIRM_CXX_FLAGS})
   target_include_directories(google-test SYSTEM PUBLIC ${google_test_dir}/include)
   target_include_directories(google-test PRIVATE ${google_test_dir})
 endfunction()

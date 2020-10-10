@@ -66,6 +66,6 @@ else()
 
   # Normally, include paths provided by LLVMConfig.cmake
   # In this case we can 'steal' them from real targets
-  get_target_property(llvm_support_includes LLVMSupport INCLUDE_DIRECTORIES)
+  get_target_property(LLVM_INCLUDE_DIRS LLVMSupport INCLUDE_DIRECTORIES)
   list(REMOVE_DUPLICATES LLVM_INCLUDE_DIRS)
 endif()
