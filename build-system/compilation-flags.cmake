@@ -1,10 +1,14 @@
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 if (LIBIRM_BUILD_32_BITS)
   set (CMAKE_CXX_FLAGS -m32 ${CMAKE_CXX_FLAGS})
 endif()
 
-set (LIBIRM_CMAKE_CXX_FLAGS -fno-rtti)
+set (LIBIRM_CMAKE_CXX_FLAGS -fno-rtti -Wall -Werror)
 set (LIBIRM_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+if(MULL_INTEGRATION)
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
+endif()
