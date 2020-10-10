@@ -43,7 +43,8 @@ TEST(CallRemoval, canMutate) {
 
   auto callInt = llvm::CallInst::Create(intFunction, {}, "", basicBlock);
   auto callVoid = llvm::CallInst::Create(voidFunction, {}, "", basicBlock);
-  auto callIntrinsic = llvm::CallInst::Create(intrinsicFunction, {}, "", basicBlock);
+  auto null = llvm::ConstantPointerNull::get(intType->getPointerTo(0));
+  auto callIntrinsic = llvm::CallInst::Create(intrinsicFunction, { null }, "", basicBlock);
 
   MutatorNoIntrinsics mutatorNoIntrinsics;
   ASSERT_TRUE(mutatorNoIntrinsics.canMutate(callVoid));
