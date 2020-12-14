@@ -11,6 +11,9 @@ cxx_flags_mapping:
 
 llvm_mapping:
   macOS-10.14:
+    11.0.0:
+      url: https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/clang+llvm-11.0.0-x86_64-apple-darwin.tar.xz
+      path: clang+llvm-11.0.0-x86_64-apple-darwin
     10.0.0:
       url: https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-apple-darwin.tar.xz
       path: clang+llvm-10.0.0-x86_64-apple-darwin
@@ -28,6 +31,10 @@ llvm_mapping:
       path: clang+llvm-6.0.0-x86_64-apple-darwin
 
   ubuntu-18.04:
+    # FIXME: wrong ubuntu version
+    11.0.0:
+      url: https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/clang+llvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+      path: clang+llvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04
     10.0.0:
       url: https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
       path: clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04

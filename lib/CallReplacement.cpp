@@ -15,8 +15,7 @@
 //
 
 #include "irm/Mutations/CallReplacement.h"
-#include <llvm/IR/CallSite.h>
-#include <llvm/IR/Instruction.h>
+#include <llvm/IR/Instructions.h>
 
 using namespace irm;
 
@@ -29,18 +28,22 @@ bool CallReplacement::canMutate(llvm::Instruction *instruction) {
   if (instruction->getOpcode() != llvm::Instruction::Call) {
     return false;
   }
-  llvm::CallSite call(instruction);
+  auto *call = llvm::dyn_cast<llvm::CallInst>(instruction);
+  if (!call) {
+    return false;
+  }
+
   /// Do not touch indirect calls
-  if (!call.getCalledFunction()) {
+  if (!call->getCalledFunction()) {
     return false;
   }
   /// Do not touch intrinsics
-  if (call.getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::ID(0)) {
+  if (call->getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::ID(0)) {
     return false;
   }
-  assert(call.getFunctionType());
-  assert(call.getFunctionType()->getReturnType());
-  auto returnType = call.getFunctionType()->getReturnType();
+  assert(call->getFunctionType());
+  assert(call->getFunctionType()->getReturnType());
+  auto returnType = call->getFunctionType()->getReturnType();
   if (returnType->getTypeID() != returnTypeId) {
     return false;
   }
@@ -50,8 +53,8 @@ bool CallReplacement::canMutate(llvm::Instruction *instruction) {
 
 void CallReplacement::mutate(llvm::Instruction *instruction) {
   assert(instruction);
-  llvm::CallSite call(instruction);
-  auto returnType = call.getFunctionType()->getReturnType();
+  auto *call = llvm::dyn_cast<llvm::CallInst>(instruction);
+  auto returnType = call->getFunctionType()->getReturnType();
   auto replacement = constConstructor->constructValue(returnType);
   instruction->replaceAllUsesWith(replacement);
   instruction->eraseFromParent();
