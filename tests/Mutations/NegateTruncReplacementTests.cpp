@@ -14,10 +14,10 @@
 //  limitations under the License.
 //
 
+#include "TestLLVMCompatibility.h"
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/Module.h>
-#include "TestLLVMCompatibility.h"
 
 using namespace irm;
 
@@ -40,7 +40,7 @@ TEST(NegateTruncReplacement, canMutate) {
   /// a realistic layout.
   new llvm::StoreInst(i32Value, allocaInst, basicBlock);
 
-  auto *loadInst = new llvm::LoadInst(allocaInst, "", basicBlock);
+  auto *loadInst = new llvm::LoadInst(i32type, allocaInst, "", basicBlock);
   auto *truncInst = new llvm::TruncInst(loadInst, i1type, "", basicBlock);
 
   Mutator mutator;
@@ -67,7 +67,7 @@ TEST(NegateTruncReplacement, mutate) {
   /// a realistic layout.
   new llvm::StoreInst(i32Value, allocaInst, basicBlock);
 
-  auto *loadInst = new llvm::LoadInst(allocaInst, "", basicBlock);
+  auto *loadInst = new llvm::LoadInst(i32type, allocaInst, "", basicBlock);
   auto *truncInst = new llvm::TruncInst(loadInst, i1type, "", basicBlock);
   auto *retInst = llvm::ReturnInst::Create(context, truncInst, basicBlock);
 

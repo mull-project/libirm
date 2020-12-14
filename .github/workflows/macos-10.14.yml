@@ -1,0 +1,42 @@
+name: macOS 10.14
+
+on: [pull_request]
+
+jobs:
+  test:
+    name: LLVM ${{ matrix.LLVM_VERSION }}
+    runs-on: macOS-10.14
+    strategy:
+      matrix:
+        LLVM_VERSION: [6.0.0, 7.0.0, 8.0.0, 9.0.0, 10.0.0, 11.0.0]
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: Setup OS
+        run: |
+          brew install gnu-tar
+          sudo ln -s /usr/local/bin/gtar /usr/local/bin/tar
+          pip install ansible
+      - name: Prepare working directory
+        run: |
+          sudo mkdir -p /opt
+          sudo chown -R `whoami` /opt
+      - name: Download LLVM
+        run: |
+          cd ci && \
+          ansible-playbook download-llvm.yaml \
+            -e llvm_version=${{ matrix.LLVM_VERSION }} \
+            -e platform=macOS-10.14 \
+            -e host=localhost \
+            --verbose
+      - name: Build and run tests
+        run: |
+          cd ci && \
+          ansible-playbook build.yaml \
+            -e llvm_version=${{ matrix.LLVM_VERSION }} \
+            -e platform=macOS-10.14 \
+            -e host=localhost \
+            -e source_dir=$PWD/.. \
+            --verbose

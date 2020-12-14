@@ -1,36 +1,36 @@
-name: CI
+name: CI Ubuntu 20.04
 
 on: [pull_request]
 
 jobs:
   test:
-    name: LLVM ${{ matrix.LLVM_VERSION }} / ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: LLVM ${{ matrix.LLVM_VERSION }}
+    runs-on: ubuntu-20.04
+    container: ubuntu:20.04
     strategy:
       matrix:
-        LLVM_VERSION: [6.0.0, 7.0.0, 8.0.0, 9.0.0, 10.0.0]
-        os: [ubuntu-18.04, macOS-10.14]
+        LLVM_VERSION: [11.0.0]
 
     steps:
+      - name: Install software
+        run: |
+          apt-get update && apt-get install -y software-properties-common
+          add-apt-repository ppa:git-core/ppa
+          apt-get update && apt-get install -y python3-pip curl git cmake \
+            libz-dev ncurses-dev libstdc++6 liblzma-dev
+          pip3 install ansible
       - uses: actions/checkout@v1
         with:
           submodules: true
-      - name: Setup OS
-        if: matrix.os == 'macOS-10.14'
-        run: |
-          brew install gnu-tar
-          sudo ln -s /usr/local/bin/gtar /usr/local/bin/tar
-          pip install ansible
       - name: Prepare working directory
         run: |
-          sudo mkdir -p /opt
-          sudo chown -R `whoami` /opt
+          mkdir -p /opt
       - name: Download LLVM
         run: |
           cd ci && \
           ansible-playbook download-llvm.yaml \
             -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=${{ matrix.os }} \
+            -e platform=ubuntu-20.04 \
             -e host=localhost \
             --verbose
       - name: Build and run tests
@@ -38,7 +38,7 @@ jobs:
           cd ci && \
           ansible-playbook build.yaml \
             -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=${{ matrix.os }} \
+            -e platform=ubuntu-20.04 \
             -e host=localhost \
             -e source_dir=$PWD/.. \
             --verbose

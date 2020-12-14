@@ -15,7 +15,7 @@
 //
 
 #include "irm/Mutations/VoidCallRemoval.h"
-#include <llvm/IR/CallSite.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Intrinsics.h>
 
 using namespace irm;
@@ -27,18 +27,18 @@ bool VoidCallRemoval::canMutate(llvm::Instruction *instruction) {
   if (instruction->getOpcode() != llvm::Instruction::Call) {
     return false;
   }
-  llvm::CallSite call(instruction);
+  llvm::CallInst *call = llvm::dyn_cast<llvm::CallInst>(instruction);
   /// Do not touch indirect calls
-  if (!call.getCalledFunction()) {
+  if (!call->getCalledFunction()) {
     return false;
   }
-  assert(call.getFunctionType()->getReturnType());
-  if (call.getFunctionType()->getReturnType()->getTypeID() != llvm::Type::VoidTyID) {
+  assert(call->getFunctionType()->getReturnType());
+  if (call->getFunctionType()->getReturnType()->getTypeID() != llvm::Type::VoidTyID) {
     return false;
   }
 
-  assert(call.getCalledFunction());
-  bool isIntrinsic = call.getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::not_intrinsic;
+  assert(call->getCalledFunction());
+  bool isIntrinsic = call->getCalledFunction()->getIntrinsicID() != llvm::Intrinsic::not_intrinsic;
   if (onlyIntrinsics) {
     return isIntrinsic;
   }
