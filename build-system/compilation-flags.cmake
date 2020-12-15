@@ -6,7 +6,11 @@ if (LIBIRM_BUILD_32_BITS)
   set (CMAKE_CXX_FLAGS -m32 ${CMAKE_CXX_FLAGS})
 endif()
 
-set (LIBIRM_CMAKE_CXX_FLAGS -fno-rtti -Wall -Werror)
+set (LIBIRM_CMAKE_CXX_FLAGS -Wall -Werror)
+if (NOT LLVM_ENABLE_RTTI)
+  list(APPEND LIBIRM_CMAKE_CXX_FLAGS -fno-rtti)
+endif()
+
 set (LIBIRM_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 if(MULL_INTEGRATION)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
