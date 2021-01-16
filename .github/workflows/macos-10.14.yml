@@ -1,6 +1,13 @@
 name: macOS 10.14
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
   test:
@@ -18,7 +25,7 @@ jobs:
         run: |
           brew install gnu-tar
           sudo ln -s /usr/local/bin/gtar /usr/local/bin/tar
-          pip install ansible
+          pip3 install ansible
       - name: Prepare working directory
         run: |
           sudo mkdir -p /opt
@@ -40,3 +47,8 @@ jobs:
             -e host=localhost \
             -e source_dir=$PWD/.. \
             --verbose
+      - name: Upload code coverage
+        run: |
+          curl -s https://codecov.io/bash > codecov.sh
+          bash codecov.sh -f /opt/debug-coverage.lcov || echo "No debug coverage"
+          bash codecov.sh -f /opt/release-coverage.lcov || echo "No release coverage"
