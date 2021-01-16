@@ -1,6 +1,10 @@
 name: CI Ubuntu 18.04
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   test:
@@ -42,3 +46,8 @@ jobs:
             -e host=localhost \
             -e source_dir=$PWD/.. \
             --verbose
+      - name: Upload code coverage
+        run: |
+          curl -s https://codecov.io/bash > codecov.sh
+          bash codecov.sh -f /opt/debug-coverage.lcov || echo "No debug coverage"
+          bash codecov.sh -f /opt/release-coverage.lcov || echo "No release coverage"
