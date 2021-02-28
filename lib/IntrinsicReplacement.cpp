@@ -48,5 +48,6 @@ void IntrinsicReplacement::mutate(llvm::Instruction *instruction) {
 
   auto call = llvm::CallInst::Create(replacement, arguments, "");
   call->insertAfter(instruction);
+  instruction->replaceAllUsesWith(call);
   instruction->eraseFromParent();
 }
