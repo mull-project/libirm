@@ -64,12 +64,13 @@ TEST(IntrinsicReplacement, mutate) {
   auto op2 = llvm::ConstantInt::get(intrinsicType, 40, false);
 
   auto callSad = llvm::CallInst::Create(sadd, { op1, op2 }, "", basicBlock);
-
+  auto resultUse = llvm::ExtractValueInst::Create(callSad, { 1 }, "", basicBlock);
   sadd_with_overflowTossub_with_overflow mutator;
   mutator.mutate(callSad);
 
   auto ssub = llvm::dyn_cast<llvm::IntrinsicInst>(&basicBlock->front());
 
+  ASSERT_EQ(resultUse->getAggregateOperand(), ssub);
   ASSERT_NE(ssub, nullptr);
   ASSERT_EQ(ssub->getIntrinsicID(), llvm::Intrinsic::ssub_with_overflow);
   ASSERT_EQ(ssub->getOperand(0), op1);
