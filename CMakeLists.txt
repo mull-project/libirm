@@ -8,8 +8,6 @@ project(libirm
 set (PROJECT_DESCRIPTION "Low-level IR mutations for LLVM Bitcode")
 set (PROJECT_HOMEPAGE_URL "https://github.com/mull-project/libirm")
 
-option(LIBIRM_BUILD_32_BITS "Enable 32 bits build" OFF)
-
 include(build-system/build-system.cmake)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
