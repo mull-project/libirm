@@ -41,6 +41,21 @@ if (${BUILD_AGAINST_PRECOMPILED_LLVM})
     )
 
   find_package(LLVM REQUIRED CONFIG PATHS ${search_paths} NO_DEFAULT_PATH)
+
+  if (APPLE)
+    if (LLVM_VERSION_MAJOR EQUAL 12)
+      # Precompiled LLVM 12 for macOS contains a hardcoded dependency on a very
+      # specific version of libcurses:
+      #
+      #   set_target_properties(LLVMSupport PROPERTIES
+      #     INTERFACE_LINK_LIBRARIES "m;ZLIB::ZLIB;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/lib/libcurses.tbd;LLVMDemangle"
+      #   )
+      #
+      # So we are monkey-patching it here
+      set_target_properties(LLVMSupport PROPERTIES
+        INTERFACE_LINK_LIBRARIES "z;curses;m;LLVMDemangle")
+    endif()
+  endif()
 else()
   macro(get_llvm_version_component input component)
     string(REGEX MATCH "${component} ([0-9]+)" match ${input})
