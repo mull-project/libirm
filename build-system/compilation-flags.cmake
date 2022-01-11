@@ -8,7 +8,3 @@ if (NOT LLVM_ENABLE_RTTI)
 endif()
 
 set (LIBIRM_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-if(MULL_INTEGRATION)
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
-endif()

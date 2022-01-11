@@ -3,7 +3,7 @@ set (SOURCES
   Mutations/CallRemovalTests.cpp
   Mutations/CallReplacementTests.cpp
   Mutations/CmpInstPredicateReplacementTests.cpp
-  Mutations/ConstatnReplacementTests.cpp
+  Mutations/ConstantReplacementTests.cpp
   Mutations/InstrinsicReplacementTests.cpp
   Mutations/NegateTruncReplacementTests.cpp
   Mutations/NegateXORReplacementTests.cpp

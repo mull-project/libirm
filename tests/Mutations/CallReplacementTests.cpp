@@ -17,7 +17,6 @@
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/Module.h>
-#include "TestLLVMCompatibility.h"
 
 using namespace irm;
 
@@ -27,16 +26,19 @@ TEST(CallReplacement, canMutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto functionType = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = test_llvm_compat::internalFunction(functionType, "test", module);
+  auto function =
+      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intType = llvm::Type::getInt8Ty(context);
   auto intFunctionType = llvm::FunctionType::get(intType, false);
-  auto intFunction = test_llvm_compat::internalFunction(intFunctionType, "call_int", module);
+  auto intFunction =
+      llvm::Function::Create(intFunctionType, llvm::Function::InternalLinkage, "call_int", module);
 
   auto floatType = llvm::Type::getFloatTy(context);
   auto floatFunctionType = llvm::FunctionType::get(floatType, false);
-  auto floatFunction = test_llvm_compat::internalFunction(floatFunctionType, "call_float", module);
+  auto floatFunction = llvm::Function::Create(
+      floatFunctionType, llvm::Function::InternalLinkage, "call_float", module);
 
   auto callInt = llvm::CallInst::Create(intFunction, {}, "", basicBlock);
   auto callFloat = llvm::CallInst::Create(floatFunction, {}, "", basicBlock);
@@ -53,11 +55,13 @@ TEST(CallReplacement, mutate) {
   llvm::Module module("test", context);
   auto intType = llvm::Type::getInt32Ty(context);
   auto functionType = llvm::FunctionType::get(intType, false);
-  auto function = test_llvm_compat::internalFunction(functionType, "test", module);
+  auto function =
+      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intFunctionType = llvm::FunctionType::get(intType, false);
-  auto intFunction = test_llvm_compat::internalFunction(intFunctionType, "call_int", module);
+  auto intFunction =
+      llvm::Function::Create(intFunctionType, llvm::Function::InternalLinkage, "call_int", module);
 
   auto callInt = llvm::CallInst::Create(intFunction, {}, "", basicBlock);
   auto retInst = llvm::ReturnInst::Create(context, callInt, basicBlock);
