@@ -14,7 +14,6 @@
 //  limitations under the License.
 //
 
-#include "TestLLVMCompatibility.h"
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/Module.h>
@@ -27,7 +26,7 @@ TEST(NegateTruncReplacement, canMutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = test_llvm_compat::internalFunction(type, "test", module);
+  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   llvm::Type *i1type = llvm::IntegerType::get(context, 1);
@@ -54,7 +53,7 @@ TEST(NegateTruncReplacement, mutate) {
   llvm::Module module("test", context);
 
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = test_llvm_compat::internalFunction(type, "test", module);
+  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   llvm::Type *i1type = llvm::IntegerType::get(context, 1);

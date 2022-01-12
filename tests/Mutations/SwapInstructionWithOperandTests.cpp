@@ -14,7 +14,6 @@
 //  limitations under the License.
 //
 
-#include "TestLLVMCompatibility.h"
 #include <gtest/gtest.h>
 #include <irm/irm.h>
 #include <llvm/IR/DerivedTypes.h>
@@ -27,7 +26,7 @@ TEST(SwapInstructionWithOperandTests, canMutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = test_llvm_compat::internalFunction(type, "test", module);
+  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto op1 = llvm::ConstantInt::get(llvm::IntegerType::get(context, 8), 5, false);
@@ -40,7 +39,6 @@ TEST(SwapInstructionWithOperandTests, canMutate) {
   SwapInstructionWithOperand swapAddOOB(llvm::Instruction::BinaryOps::Add, 15);
   ASSERT_FALSE(swapAddOOB.canMutate(add));
 
-#if LLVM_VERSION_MAJOR > 7
   auto op3 = llvm::ConstantFP::get(llvm::Type::getFloatTy(context), 40.2);
   auto fneg = llvm::UnaryOperator::CreateFNeg(op3, "fneg", basicBlock);
   ASSERT_FALSE(swapAdd.canMutate(fneg));
@@ -49,14 +47,13 @@ TEST(SwapInstructionWithOperandTests, canMutate) {
   SwapFNegWithOperand swapFneg;
   ASSERT_FALSE(swapFneg.canMutate(add));
   ASSERT_TRUE(swapFneg.canMutate(fneg));
-#endif
 }
 
 TEST(SwapInstructionWithOperandTests, mutate) {
   llvm::LLVMContext context;
   llvm::Module module("test", context);
   auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
-  auto function = test_llvm_compat::internalFunction(type, "test", module);
+  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto op1 = llvm::ConstantInt::get(llvm::IntegerType::get(context, 8), 5, false);
@@ -69,12 +66,10 @@ TEST(SwapInstructionWithOperandTests, mutate) {
   swapAdd.mutate(add);
   ASSERT_EQ(addUser->getOperand(0), op1);
 
-#if LLVM_VERSION_MAJOR > 7
   auto op3 = llvm::ConstantFP::get(llvm::Type::getFloatTy(context), 40.2);
   auto fneg = llvm::UnaryOperator::CreateFNeg(op3, "fneg", basicBlock);
   auto fnegUser = llvm::BinaryOperator::CreateFAdd(fneg, op3, "fneg_user", basicBlock);
   SwapFNegWithOperand swapFneg;
   swapFneg.mutate(fneg);
   ASSERT_EQ(fnegUser->getOperand(0), op3);
-#endif
 }

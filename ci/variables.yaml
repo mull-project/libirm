@@ -16,9 +16,6 @@ coverage_on_mapping:
   11.0.0: true
   10.0.0: true
   9.0.0: true
-  8.0.0: true
-  7.0.0: false
-  6.0.0: false
 
 llvm_mapping:
   macOS-10.14:
@@ -37,15 +34,6 @@ llvm_mapping:
     9.0.0:
       url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-darwin-apple.tar.xz
       path: clang+llvm-9.0.0-x86_64-darwin-apple
-    8.0.0:
-      url: https://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz
-      path: clang+llvm-8.0.0-x86_64-apple-darwin
-    7.0.0:
-      url: https://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz
-      path: clang+llvm-7.0.0-x86_64-apple-darwin
-    6.0.0:
-      url: https://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
-      path: clang+llvm-6.0.0-x86_64-apple-darwin
 
   ubuntu-20.04:
     13.0.0:
@@ -65,15 +53,6 @@ llvm_mapping:
     9.0.0:
       url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
       path: clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04
-    8.0.0:
-      url: https://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-      path: clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04
-    7.0.0:
-      url: https://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz
-      path: clang+llvm-7.0.0-x86_64-linux-gnu-ubuntu-16.04
-    6.0.0:
-      url: https://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz
-      path: clang+llvm-6.0.0-x86_64-linux-gnu-ubuntu-16.04
 
 
 llvm_url: "{{ llvm_mapping[platform][llvm_version].url }}"
