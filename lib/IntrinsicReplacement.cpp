@@ -42,8 +42,8 @@ void IntrinsicReplacement::mutate(llvm::Instruction *instruction) {
       instruction->getModule(), to, { intrinsic->getFunctionType()->getParamType(0) });
 
   std::vector<llvm::Value *> arguments;
-  for (unsigned i = 0; i < intrinsic->getNumArgOperands(); i++) {
-    arguments.push_back(intrinsic->getArgOperand(i));
+  for (auto &arg : intrinsic->args()) {
+    arguments.push_back(arg.get());
   }
 
   auto call = llvm::CallInst::Create(replacement, arguments, "");

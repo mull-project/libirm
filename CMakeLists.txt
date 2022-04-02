@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.7)
 
 project(libirm
-  VERSION 0.5.0
-  LANGUAGES CXX
+  VERSION 0.6.0
+  LANGUAGES C CXX
 )
 
 set (PROJECT_DESCRIPTION "Low-level IR mutations for LLVM Bitcode")
