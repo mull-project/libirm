@@ -10,13 +10,6 @@ cxx_flags_mapping:
   ubuntu-18.04: -D_GLIBCXX_USE_CXX11_ABI=1 -fprofile-instr-generate -fcoverage-mapping
   ubuntu-20.04: -D_GLIBCXX_USE_CXX11_ABI=1 -fprofile-instr-generate -fcoverage-mapping
 
-coverage_on_mapping:
-  13.0.0: true
-  12.0.0: true
-  11.0.0: true
-  10.0.0: true
-  9.0.0: true
-
 llvm_mapping:
   macOS-10.14:
     14.0.0:
@@ -66,4 +59,3 @@ llvm_path: "{{ llvm_mapping[platform][llvm_version].path }}"
 llvm_dir: "{{ working_dir }}/llvm-{{ llvm_version }}"
 
 cxx_flags: "{{ cxx_flags_mapping[platform] }}"
-coverage_on: "{{ coverage_on_mapping[llvm_version] }}"
