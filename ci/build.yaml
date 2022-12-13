@@ -29,19 +29,6 @@
       args:
         chdir: "{{ debug_build_dir }}"
 
-    - name: Merge code coverage (Debug)
-      command: "{{ llvm_dir }}/bin/llvm-profdata merge default.profraw -o default.profdata"
-      args:
-        chdir: "{{ debug_build_dir }}"
-
-    - name: Export code coverage (Debug)
-      shell: "{{ llvm_dir }}/bin/llvm-cov export --format=lcov --instr-profile=default.profdata tests/irm-tests > coverage.lcov"
-      args:
-        chdir: "{{ debug_build_dir }}"
-
-    - name: Copy code coverage (Debug)
-      command: mv {{ debug_build_dir }}/coverage.lcov /opt/debug-coverage.lcov
-
     - name: Create Build Directory (Release)
       file:
         path: "{{ release_build_dir }}"
@@ -65,16 +52,3 @@
       command: "{{ release_build_dir}}/tests/irm-tests"
       args:
         chdir: "{{ release_build_dir }}"
-
-    - name: Merge code coverage (Release)
-      command: "{{ llvm_dir }}/bin/llvm-profdata merge default.profraw -o default.profdata"
-      args:
-        chdir: "{{ release_build_dir }}"
-
-    - name: Export code coverage (Release)
-      shell: "{{ llvm_dir }}/bin/llvm-cov export --format=lcov --instr-profile=default.profdata tests/irm-tests > coverage.lcov"
-      args:
-        chdir: "{{ release_build_dir }}"
-
-    - name: Copy code coverage (Release)
-      command: mv {{ release_build_dir }}/coverage.lcov /opt/release-coverage.lcov
