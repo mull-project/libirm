@@ -6,9 +6,9 @@ debug_build_dir: "{{ working_dir }}/build.mull.debug.dir"
 release_build_dir: "{{ working_dir }}/build.mull.release.dir"
 
 cxx_flags_mapping:
-  macOS-10.15: -fprofile-instr-generate -fcoverage-mapping
-  ubuntu-18.04: -D_GLIBCXX_USE_CXX11_ABI=1 -fprofile-instr-generate -fcoverage-mapping
-  ubuntu-20.04: -D_GLIBCXX_USE_CXX11_ABI=1 -fprofile-instr-generate -fcoverage-mapping
+  macOS-10.15:
+  ubuntu-18.04: -D_GLIBCXX_USE_CXX11_ABI=1
+  ubuntu-20.04: -D_GLIBCXX_USE_CXX11_ABI=1
 
 llvm_mapping:
   macOS-10.15:
