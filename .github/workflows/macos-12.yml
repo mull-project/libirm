@@ -1,4 +1,4 @@
-name: macOS 10.15
+name: macOS 12
 
 on:
   pull_request:
@@ -9,10 +9,10 @@ on:
 jobs:
   test:
     name: LLVM ${{ matrix.LLVM_VERSION }}
-    runs-on: macos-10.15
+    runs-on: macos-12
     strategy:
       matrix:
-        LLVM_VERSION: [9.0.0, 10.0.0, 11.0.0, 12.0.0, 13.0.0, 14.0.0, 15.0.0]
+        LLVM_VERSION: [12.0.0, 13.0.0, 14.0.0, 15.0.0]
 
     steps:
       - uses: actions/checkout@v1
@@ -32,7 +32,7 @@ jobs:
           cd ci && \
           ansible-playbook download-llvm.yaml \
             -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=macOS-10.15 \
+            -e platform=macOS-12 \
             -e host=localhost \
             --verbose
       - name: Build and run tests
@@ -40,7 +40,7 @@ jobs:
           cd ci && \
           ansible-playbook build.yaml \
             -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=macOS-10.15 \
+            -e platform=macOS-12 \
             -e host=localhost \
             -e source_dir=$PWD/.. \
             --verbose

@@ -79,5 +79,5 @@ TEST(CallRemoval, mutate) {
 
   Mutator mutator;
   mutator.mutate(callVoid);
-  ASSERT_EQ(basicBlock->getInstList().size(), size_t(0));
+  ASSERT_TRUE(basicBlock->empty());
 }
