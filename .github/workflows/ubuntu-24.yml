@@ -1,0 +1,44 @@
+name: Ubuntu 24.04
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: LLVM ${{ matrix.LLVM_VERSION }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        LLVM_VERSION: [18, 19]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install LLVM
+        run: sudo apt-get update && sudo apt-get install -y ninja-build llvm-${{ matrix.LLVM_VERSION }}-dev clang-${{ matrix.LLVM_VERSION }}
+
+      - name: Build and test (Debug)
+        env:
+          CC: clang-${{ matrix.LLVM_VERSION }}
+          CXX: clang++-${{ matrix.LLVM_VERSION }}
+        run: |
+          cmake -B build-debug -G Ninja \
+            -DPATH_TO_LLVM=/usr/lib/llvm-${{ matrix.LLVM_VERSION }}
+          cmake --build build-debug --target irm-tests
+          ./build-debug/tests/irm-tests
+
+      - name: Build and test (Release)
+        env:
+          CC: clang-${{ matrix.LLVM_VERSION }}
+          CXX: clang++-${{ matrix.LLVM_VERSION }}
+        run: |
+          cmake -B build-release -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DPATH_TO_LLVM=/usr/lib/llvm-${{ matrix.LLVM_VERSION }}
+          cmake --build build-release --target irm-tests
+          ./build-release/tests/irm-tests
