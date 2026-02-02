@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 #include <irm/irm.h>
+#include <llvm/Config/llvm-config.h>
 #include <llvm/IR/Module.h>
 
 using namespace irm;
@@ -42,7 +43,11 @@ TEST(CallRemoval, canMutate) {
       voidFunctionType, llvm::Function::InternalLinkage, "call_void", module);
 
   auto ptrType = llvm::PointerType::get(context, 0);
+#if LLVM_VERSION_MAJOR >= 19
   auto intrinsicFunction = llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::vastart, {ptrType});
+#else
+  auto intrinsicFunction = llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::vastart);
+#endif
 
   auto callInt = llvm::CallInst::Create(intFunction, {}, "", basicBlock);
   auto callVoid = llvm::CallInst::Create(voidFunction, {}, "", basicBlock);
