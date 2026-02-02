@@ -24,15 +24,15 @@ jobs:
 
       - name: Build and test (Debug)
         run: |
-          cmake -B build-debug \
+          cmake -B build-debug -G Ninja \
             -DPATH_TO_LLVM=$(brew --prefix llvm@${{ matrix.LLVM_VERSION }})
-          cmake --build build-debug --target irm-tests -j$(sysctl -n hw.ncpu)
+          cmake --build build-debug --target irm-tests
           ./build-debug/tests/irm-tests
 
       - name: Build and test (Release)
         run: |
-          cmake -B build-release \
+          cmake -B build-release -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DPATH_TO_LLVM=$(brew --prefix llvm@${{ matrix.LLVM_VERSION }})
-          cmake --build build-release --target irm-tests -j$(sysctl -n hw.ncpu)
+          cmake --build build-release --target irm-tests
           ./build-release/tests/irm-tests
