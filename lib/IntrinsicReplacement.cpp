@@ -38,8 +38,13 @@ void IntrinsicReplacement::mutate(llvm::Instruction *instruction) {
   assert(instruction);
   assert(canMutate(instruction));
   auto intrinsic = llvm::cast<llvm::IntrinsicInst>(instruction);
+#if LLVM_VERSION_MAJOR >= 20
+  auto replacement = llvm::Intrinsic::getOrInsertDeclaration(
+      instruction->getModule(), to, { intrinsic->getFunctionType()->getParamType(0) });
+#else
   auto replacement = llvm::Intrinsic::getDeclaration(
       instruction->getModule(), to, { intrinsic->getFunctionType()->getParamType(0) });
+#endif
 
   std::vector<llvm::Value *> arguments;
   for (auto &arg : intrinsic->args()) {
