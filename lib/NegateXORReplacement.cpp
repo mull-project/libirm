@@ -46,7 +46,13 @@ void NegateXORReplacement::mutate(llvm::Instruction *instruction) {
   /// entry:
   /// %not = xor i1 false, true
   /// %xor = xor i1 true, %not
+
+#if LLVM_VERSION_MAJOR >= 20
+  auto position = llvm::BasicBlock::iterator(instruction);
+#else
+  auto position = instruction;
+#endif
   auto rhs = instruction->getOperand(1);
-  auto notInstruction = llvm::BinaryOperator::CreateNot(rhs, "not", instruction);
+  auto notInstruction = llvm::BinaryOperator::CreateNot(rhs, "not", position);
   instruction->setOperand(1, notInstruction);
 }
