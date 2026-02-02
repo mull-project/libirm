@@ -12,34 +12,27 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        LLVM_VERSION: ["18.1", "19.1"]
+        LLVM_VERSION: [18, 19]
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Setup OS
+
+      - name: Install LLVM
+        run: brew install llvm@${{ matrix.LLVM_VERSION }}
+
+      - name: Build and test (Debug)
         run: |
-          brew install gnu-tar ansible
-          sudo ln -sf $(which gtar) /usr/local/bin/tar
-      - name: Prepare working directory
+          cmake -B build-debug \
+            -DPATH_TO_LLVM=$(brew --prefix llvm@${{ matrix.LLVM_VERSION }})
+          cmake --build build-debug --target irm-tests -j$(sysctl -n hw.ncpu)
+          ./build-debug/tests/irm-tests
+
+      - name: Build and test (Release)
         run: |
-          sudo mkdir -p /opt
-          sudo chown -R `whoami` /opt
-      - name: Download LLVM
-        run: |
-          cd ci && \
-          ansible-playbook download-llvm.yaml \
-            -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=macos-arm64 \
-            -e host=localhost \
-            --verbose
-      - name: Build and run tests
-        run: |
-          cd ci && \
-          ansible-playbook build.yaml \
-            -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=macos-arm64 \
-            -e host=localhost \
-            -e source_dir=$PWD/.. \
-            --verbose
+          cmake -B build-release \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DPATH_TO_LLVM=$(brew --prefix llvm@${{ matrix.LLVM_VERSION }})
+          cmake --build build-release --target irm-tests -j$(sysctl -n hw.ncpu)
+          ./build-release/tests/irm-tests

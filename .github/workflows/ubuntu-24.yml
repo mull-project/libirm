@@ -12,35 +12,33 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        LLVM_VERSION: ["18.1", "19.1"]
+        LLVM_VERSION: [18, 19]
 
     steps:
-      - name: Install software
-        run: |
-          sudo apt-get update && sudo apt-get install -y python3-pip curl git cmake \
-            libz-dev libncurses-dev libstdc++6 liblzma-dev
-          pip3 install --break-system-packages ansible
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Prepare working directory
+
+      - name: Install LLVM
+        run: sudo apt-get update && sudo apt-get install -y llvm-${{ matrix.LLVM_VERSION }}-dev clang-${{ matrix.LLVM_VERSION }}
+
+      - name: Build and test (Debug)
+        env:
+          CC: clang-${{ matrix.LLVM_VERSION }}
+          CXX: clang++-${{ matrix.LLVM_VERSION }}
         run: |
-          sudo mkdir -p /opt
-          sudo chown -R `whoami` /opt
-      - name: Download LLVM
+          cmake -B build-debug \
+            -DPATH_TO_LLVM=/usr/lib/llvm-${{ matrix.LLVM_VERSION }}
+          cmake --build build-debug --target irm-tests -j$(nproc)
+          ./build-debug/tests/irm-tests
+
+      - name: Build and test (Release)
+        env:
+          CC: clang-${{ matrix.LLVM_VERSION }}
+          CXX: clang++-${{ matrix.LLVM_VERSION }}
         run: |
-          cd ci && \
-          ansible-playbook download-llvm.yaml \
-            -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=ubuntu-24.04 \
-            -e host=localhost \
-            --verbose
-      - name: Build and run tests
-        run: |
-          cd ci && \
-          ansible-playbook build.yaml \
-            -e llvm_version=${{ matrix.LLVM_VERSION }} \
-            -e platform=ubuntu-24.04 \
-            -e host=localhost \
-            -e source_dir=$PWD/.. \
-            --verbose
+          cmake -B build-release \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DPATH_TO_LLVM=/usr/lib/llvm-${{ matrix.LLVM_VERSION }}
+          cmake --build build-release --target irm-tests -j$(nproc)
+          ./build-release/tests/irm-tests
