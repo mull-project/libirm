@@ -28,6 +28,10 @@ llvm::Value *FloatingValueConstructor::constructValue(llvm::Type *type) {
 IntValueConstructor::IntValueConstructor(int value) : constantValue(value) {}
 
 llvm::Value *IntValueConstructor::constructValue(llvm::Type *type) {
+#if LLVM_VERSION_MAJOR >= 20
   llvm::APInt intValue(type->getIntegerBitWidth(), constantValue, false, true);
+#else
+  llvm::APInt intValue(type->getIntegerBitWidth(), constantValue);
+#endif
   return llvm::ConstantInt::get(type, intValue);
 }
