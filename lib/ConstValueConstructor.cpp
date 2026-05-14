@@ -28,6 +28,6 @@ llvm::Value *FloatingValueConstructor::constructValue(llvm::Type *type) {
 IntValueConstructor::IntValueConstructor(int value) : constantValue(value) {}
 
 llvm::Value *IntValueConstructor::constructValue(llvm::Type *type) {
-  llvm::APInt intValue(type->getIntegerBitWidth(), constantValue);
+  llvm::APInt intValue(type->getIntegerBitWidth(), constantValue, false, true);
   return llvm::ConstantInt::get(type, intValue);
 }
