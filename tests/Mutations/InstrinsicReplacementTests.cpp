@@ -33,10 +33,21 @@ TEST(IntrinsicReplacement, canMutate) {
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intrinsicType = llvm::Type::getInt8Ty(context);
+#if LLVM_VERSION_MAJOR >= 20
+  auto sadd = llvm::Intrinsic::getOrInsertDeclaration(
+      &module, llvm::Intrinsic::sadd_with_overflow, { intrinsicType });
+#else
   auto sadd = llvm::Intrinsic::getDeclaration(
       &module, llvm::Intrinsic::sadd_with_overflow, { intrinsicType });
+#endif
+
+#if LLVM_VERSION_MAJOR >= 20
+  auto ssub = llvm::Intrinsic::getOrInsertDeclaration(
+      &module, llvm::Intrinsic::ssub_with_overflow, { intrinsicType });
+#else
   auto ssub = llvm::Intrinsic::getDeclaration(
       &module, llvm::Intrinsic::ssub_with_overflow, { intrinsicType });
+#endif
 
   auto op1 = llvm::ConstantInt::get(intrinsicType, 5, false);
   auto op2 = llvm::ConstantInt::get(intrinsicType, 40, false);
@@ -58,8 +69,14 @@ TEST(IntrinsicReplacement, mutate) {
   auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
 
   auto intrinsicType = llvm::Type::getInt8Ty(context);
+
+#if LLVM_VERSION_MAJOR >= 20
+  auto sadd = llvm::Intrinsic::getOrInsertDeclaration(
+      &module, llvm::Intrinsic::sadd_with_overflow, { intrinsicType });
+#else
   auto sadd = llvm::Intrinsic::getDeclaration(
       &module, llvm::Intrinsic::sadd_with_overflow, { intrinsicType });
+#endif
 
   auto op1 = llvm::ConstantInt::get(intrinsicType, 5, false);
   auto op2 = llvm::ConstantInt::get(intrinsicType, 40, false);

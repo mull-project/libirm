@@ -43,8 +43,12 @@ TEST(CallRemoval, canMutate) {
       voidFunctionType, llvm::Function::InternalLinkage, "call_void", module);
 
   auto ptrType = llvm::PointerType::get(context, 0);
-#if LLVM_VERSION_MAJOR >= 19
-  auto intrinsicFunction = llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::vastart, {ptrType});
+#if LLVM_VERSION_MAJOR >= 20
+  auto intrinsicFunction =
+      llvm::Intrinsic::getOrInsertDeclaration(&module, llvm::Intrinsic::vastart, { ptrType });
+#elif LLVM_VERSION_MAJOR >= 19
+  auto intrinsicFunction =
+      llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::vastart, { ptrType });
 #else
   auto intrinsicFunction = llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::vastart);
 #endif
