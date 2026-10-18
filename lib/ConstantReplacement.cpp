@@ -45,7 +45,7 @@ void ConstantReplacement::mutate(llvm::Instruction *instruction) {
   assert(canMutate(instruction));
 
   auto constant = llvm::cast<llvm::Constant>(instruction->getOperand(operandPosition));
-  auto constructor = constant->isZeroValue() ? constConstructor.get() : zeroConstConstructor.get();
+  auto constructor = (constant->isNullValue() || constant->isNegativeZeroValue()) ? constConstructor.get() : zeroConstConstructor.get();
   auto replacement = constructor->constructValue(constant->getType());
   instruction->setOperand(operandPosition, replacement);
 }
