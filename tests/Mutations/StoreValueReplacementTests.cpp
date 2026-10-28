@@ -196,3 +196,26 @@ TEST(StoreValueReplacement, mutate_dynamicDouble_fallsBackToConstant) {
   ASSERT_NE(mutatedValue, nullptr);
   ASSERT_TRUE(mutatedValue->isExactlyValue(42.0));
 }
+
+TEST(StoreValueReplacement, describe_roundTripsFloatingValues) {
+  llvm::LLVMContext context;
+  auto voidType = llvm::Type::getVoidTy(context);
+  auto doubleType = llvm::Type::getDoubleTy(context);
+  auto floatType = llvm::Type::getFloatTy(context);
+  llvm::Module module("test", context);
+  auto type = llvm::FunctionType::get(voidType, false);
+  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
+
+  auto doubleAddress = new llvm::AllocaInst(doubleType, 0, "", basicBlock);
+  auto doubleStore = new llvm::StoreInst(
+      llvm::ConstantFP::get(doubleType, 3.14159265358979), doubleAddress, "", basicBlock);
+  StoreDoubleReplacement doubleMutator(42);
+  ASSERT_EQ(std::stod(doubleMutator.describeReplacement(doubleStore)), -3.14159265358979);
+
+  auto floatAddress = new llvm::AllocaInst(floatType, 0, "", basicBlock);
+  auto floatStore = new llvm::StoreInst(
+      llvm::ConstantFP::get(floatType, 3.14159274f), floatAddress, "", basicBlock);
+  StoreFloatReplacement floatMutator(42);
+  ASSERT_EQ(std::stof(floatMutator.describeReplacement(floatStore)), -3.14159274f);
+}

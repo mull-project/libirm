@@ -18,7 +18,6 @@
 #include <llvm/ADT/SmallString.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Instructions.h>
-#include <sstream>
 
 using namespace irm;
 
@@ -45,10 +44,15 @@ static std::string describeAPInt(const llvm::APInt &value, bool isBool) {
   return std::string(str);
 }
 
-static std::string describeDouble(double value) {
-  std::ostringstream stream;
-  stream << value;
-  return stream.str();
+/// Prints enough digits to round-trip the value in its own type (max_digits10), so the
+/// description can be pasted back into the source (e.g. by a patch) without changing the value.
+static std::string describeFloat(llvm::Value *value) {
+  const llvm::APFloat &apFloat = llvm::cast<llvm::ConstantFP>(value)->getValueAPF();
+  unsigned bits = llvm::APFloat::semanticsPrecision(apFloat.getSemantics());
+  unsigned digits = 2 + bits * 30103 / 100000;
+  llvm::SmallString<32> str;
+  apFloat.toString(str, digits);
+  return std::string(str);
 }
 
 FloatingValueConstructor::FloatingValueConstructor(double value) : constantValue(value) {}
@@ -58,7 +62,7 @@ llvm::Value *FloatingValueConstructor::constructValue(llvm::Value *original) {
 }
 
 std::string FloatingValueConstructor::describeValue(llvm::Value *original) {
-  return describeDouble(constantValue);
+  return describeFloat(constructValue(original));
 }
 
 IntValueConstructor::IntValueConstructor(int value) : constantValue(value) {}
@@ -122,11 +126,5 @@ llvm::Value *FlippedFloatingValueConstructor::constructValue(llvm::Value *origin
 }
 
 std::string FlippedFloatingValueConstructor::describeValue(llvm::Value *original) {
-  if (auto constant = llvm::dyn_cast<llvm::ConstantFP>(original)) {
-    if (constant->isZero()) {
-      return "1";
-    }
-    return describeDouble(-constant->getValueAPF().convertToDouble());
-  }
-  return describeDouble(fallbackValue);
+  return describeFloat(constructValue(original));
 }
