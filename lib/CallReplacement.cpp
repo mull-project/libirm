@@ -54,8 +54,15 @@ bool CallReplacement::canMutate(llvm::Instruction *instruction) {
 void CallReplacement::mutate(llvm::Instruction *instruction) {
   assert(instruction);
   auto *call = llvm::dyn_cast<llvm::CallInst>(instruction);
-  auto returnType = call->getFunctionType()->getReturnType();
-  auto replacement = constConstructor->constructValue(returnType);
+  auto replacement = constConstructor->constructValue(call);
   instruction->replaceAllUsesWith(replacement);
   instruction->eraseFromParent();
+}
+
+std::string CallReplacement::describeReplacement(llvm::Instruction *instruction) {
+  assert(instruction);
+  if (!canMutate(instruction)) {
+    return {};
+  }
+  return constConstructor->describeValue(instruction);
 }

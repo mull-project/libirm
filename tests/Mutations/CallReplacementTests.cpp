@@ -67,6 +67,7 @@ TEST(CallReplacement, mutate) {
   auto retInst = llvm::ReturnInst::Create(context, callInt, basicBlock);
 
   Mutator mutator(15);
+  ASSERT_EQ(mutator.describeReplacement(callInt), "15");
   mutator.mutate(callInt);
 
   auto constant = llvm::dyn_cast<llvm::ConstantInt>(retInst->getOperand(0));
@@ -74,4 +75,59 @@ TEST(CallReplacement, mutate) {
   ASSERT_EQ(constant->getType()->getTypeID(), llvm::Type::IntegerTyID);
   auto rawConstant = *(constant->getValue().getRawData());
   ASSERT_EQ(rawConstant, 15);
+}
+
+TEST(CallReplacement, mutate_boolCall) {
+  llvm::LLVMContext context;
+  llvm::Module module("test", context);
+  auto boolType = llvm::Type::getInt1Ty(context);
+  auto functionType = llvm::FunctionType::get(boolType, false);
+  auto function =
+      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "test", module);
+  auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
+
+  auto boolFunctionType = llvm::FunctionType::get(boolType, false);
+  auto boolFunction = llvm::Function::Create(
+      boolFunctionType, llvm::Function::InternalLinkage, "call_bool", module);
+
+  auto callBool = llvm::CallInst::Create(boolFunction, {}, "", basicBlock);
+  auto retInst = llvm::ReturnInst::Create(context, callBool, basicBlock);
+
+  /// A non-zero replacement must stay non-zero for i1:
+  /// plain truncation of 42 would yield false (and APInt(1, 42) asserts)
+  IntCallReplacement mutator(42);
+  ASSERT_TRUE(mutator.canMutate(callBool));
+  ASSERT_EQ(mutator.describeReplacement(callBool), "true");
+  mutator.mutate(callBool);
+
+  auto constant = llvm::dyn_cast<llvm::ConstantInt>(retInst->getOperand(0));
+  ASSERT_NE(constant, nullptr);
+  ASSERT_TRUE(constant->getType()->isIntegerTy(1));
+  ASSERT_TRUE(constant->isOne());
+}
+
+TEST(CallReplacement, mutate_boolCall_zero) {
+  llvm::LLVMContext context;
+  llvm::Module module("test", context);
+  auto boolType = llvm::Type::getInt1Ty(context);
+  auto functionType = llvm::FunctionType::get(boolType, false);
+  auto function =
+      llvm::Function::Create(functionType, llvm::Function::InternalLinkage, "test", module);
+  auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
+
+  auto boolFunctionType = llvm::FunctionType::get(boolType, false);
+  auto boolFunction = llvm::Function::Create(
+      boolFunctionType, llvm::Function::InternalLinkage, "call_bool", module);
+
+  auto callBool = llvm::CallInst::Create(boolFunction, {}, "", basicBlock);
+  auto retInst = llvm::ReturnInst::Create(context, callBool, basicBlock);
+
+  IntCallReplacement mutator(0);
+  ASSERT_EQ(mutator.describeReplacement(callBool), "false");
+  mutator.mutate(callBool);
+
+  auto constant = llvm::dyn_cast<llvm::ConstantInt>(retInst->getOperand(0));
+  ASSERT_NE(constant, nullptr);
+  ASSERT_TRUE(constant->getType()->isIntegerTy(1));
+  ASSERT_TRUE(constant->isZero());
 }

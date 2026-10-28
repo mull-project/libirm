@@ -28,28 +28,31 @@ public:
   StoreValueReplacement(ConstValueConstructor *constConstructor, llvm::Type::TypeID typeID);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
+  std::string describeReplacement(llvm::Instruction *instruction) override;
 
 private:
   std::unique_ptr<ConstValueConstructor> constConstructor;
   llvm::Type::TypeID typeID;
 };
 
+/// `value` is only the fallback for dynamic operands; see FlippedIntValueConstructor.
 class StoreIntReplacement : public StoreValueReplacement {
 public:
   explicit StoreIntReplacement(int value)
-      : StoreValueReplacement(new IntValueConstructor(value), llvm::Type::IntegerTyID) {}
+      : StoreValueReplacement(new FlippedIntValueConstructor(value), llvm::Type::IntegerTyID) {}
 };
 
 class StoreFloatReplacement : public StoreValueReplacement {
 public:
   explicit StoreFloatReplacement(float value)
-      : StoreValueReplacement(new FloatingValueConstructor(value), llvm::Type::FloatTyID) {}
+      : StoreValueReplacement(new FlippedFloatingValueConstructor(value), llvm::Type::FloatTyID) {}
 };
 
 class StoreDoubleReplacement : public StoreValueReplacement {
 public:
   explicit StoreDoubleReplacement(double value)
-      : StoreValueReplacement(new FloatingValueConstructor(value), llvm::Type::DoubleTyID) {}
+      : StoreValueReplacement(new FlippedFloatingValueConstructor(value), llvm::Type::DoubleTyID) {
+  }
 };
 
 } // namespace irm

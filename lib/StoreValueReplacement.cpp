@@ -39,6 +39,15 @@ void StoreValueReplacement::mutate(llvm::Instruction *instruction) {
   assert(canMutate(instruction));
 
   auto store = llvm::dyn_cast<llvm::StoreInst>(instruction);
-  auto replacement = constConstructor->constructValue(store->getValueOperand()->getType());
+  auto replacement = constConstructor->constructValue(store->getValueOperand());
   instruction->setOperand(0, replacement);
+}
+
+std::string StoreValueReplacement::describeReplacement(llvm::Instruction *instruction) {
+  assert(instruction);
+  if (!canMutate(instruction)) {
+    return {};
+  }
+  auto store = llvm::dyn_cast<llvm::StoreInst>(instruction);
+  return constConstructor->describeValue(store->getValueOperand());
 }
