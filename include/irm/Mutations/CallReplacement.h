@@ -28,6 +28,7 @@ public:
   CallReplacement(ConstValueConstructor *constConstructor, llvm::Type::TypeID returnTypeId);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
+  std::string describeReplacement(llvm::Instruction *instruction) override;
 
 private:
   std::unique_ptr<ConstValueConstructor> constConstructor;

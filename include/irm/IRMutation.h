@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace llvm {
 class Instruction;
 }
@@ -26,6 +28,12 @@ class IRMutation {
 public:
   virtual bool canMutate(llvm::Instruction *instruction) = 0;
   virtual void mutate(llvm::Instruction *instruction) = 0;
+  /// Human-readable value this mutation would put in place of the instruction's
+  /// original value, e.g. "43" or "true". Must be deterministic and consistent
+  /// with mutate(). Empty string means "no instruction-specific description".
+  virtual std::string describeReplacement(llvm::Instruction *instruction) {
+    return {};
+  }
   virtual ~IRMutation() = default;
 };
 

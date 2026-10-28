@@ -27,6 +27,13 @@ bool canMutate(llvm::Instruction *instruction);
 void mutate(llvm::Instruction *instruction);
 ```
 
+Mutations that derive the replacement from the instruction also describe it:
+
+```c++
+/// e.g. "42" or "true"; empty when there is no instruction-specific description
+std::string describeReplacement(llvm::Instruction *instruction);
+```
+
 The code below changes every [`add`](https://llvm.org/docs/LangRef.html#add-instruction) instruction into [`sub`](https://llvm.org/docs/LangRef.html#sub-instruction) instruction.
 
 ```c++
@@ -205,7 +212,14 @@ StoreValueReplacement(ConstValueConstructor *constConstructor,
 ```
 
 Similar to `CallReplacement`, but replaces a `store` value with a constant provided by `constConstructor`.
-For example, `irm::StoreIntReplacement mutation(15)` will change `store i32 %x, i32* %addr` to `store i32 15, i32* %addr`.
+
+The predefined `StoreIntReplacement`, `StoreFloatReplacement`, and `StoreDoubleReplacement` derive the
+constant from the original value and only fall back to the fixed one for dynamic non-bool values:
+
+- `store i32 15` becomes `store i32 14` (LSB flip, always observable — even for bools read back via `trunc to i1`)
+- `store double 2.5` becomes `store double -2.5` (sign flip; a zero becomes `1.0`, since `-0.0 == 0.0`)
+- `store i8 (zext i1 %x to i8)` (a C/C++ `bool` store) becomes `store i8 1`
+- `store i32 %x` becomes `store i32 <fallback>`, e.g. `irm::StoreIntReplacement mutation(42)` stores `42`
 
 You can find the list of predefined mutations at [`StoreValueReplacement.h`](include/irm/Mutations/StoreValueReplacement.h).
 
