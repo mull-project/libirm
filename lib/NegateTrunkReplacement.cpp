@@ -65,6 +65,7 @@ void NegateTruncReplacement::mutate(llvm::Instruction *instruction) {
   llvm::TruncInst *truncInst = llvm::cast<llvm::TruncInst>(instruction);
 
   auto notInstruction = llvm::BinaryOperator::CreateNot(truncInst, "not");
+  notInstruction->setDebugLoc(truncInst->getDebugLoc());
   notInstruction->insertAfter(truncInst);
 
   truncInst->replaceAllUsesWith(notInstruction);

@@ -38,6 +38,7 @@ void BinaryOperatorReplacement::mutate(llvm::Instruction *instruction) {
   auto lhs = instruction->getOperand(0);
   auto rhs = instruction->getOperand(1);
   auto replacement = llvm::BinaryOperator::Create(to, lhs, rhs, "");
+  replacement->setDebugLoc(instruction->getDebugLoc());
   replacement->insertAfter(instruction);
   instruction->replaceAllUsesWith(replacement);
   instruction->eraseFromParent();
