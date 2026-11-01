@@ -46,13 +46,19 @@ static std::string describeAPInt(const llvm::APInt &value, bool isBool) {
 
 /// Prints enough digits to round-trip the value in its own type (max_digits10), so the
 /// description can be pasted back into the source (e.g. by a patch) without changing the value.
-static std::string describeFloat(llvm::Value *value) {
-  const llvm::APFloat &apFloat = llvm::cast<llvm::ConstantFP>(value)->getValueAPF();
+static std::string describeFloat(const llvm::APFloat &apFloat) {
   unsigned bits = llvm::APFloat::semanticsPrecision(apFloat.getSemantics());
   unsigned digits = 2 + bits * 30103 / 100000;
   llvm::SmallString<32> str;
   apFloat.toString(str, digits);
   return std::string(str);
+}
+
+static llvm::APFloat makeAPFloat(llvm::Type *type, double value) {
+  llvm::APFloat result(value);
+  bool losesInfo = false;
+  result.convert(type->getFltSemantics(), llvm::APFloat::rmNearestTiesToEven, &losesInfo);
+  return result;
 }
 
 FloatingValueConstructor::FloatingValueConstructor(double value) : constantValue(value) {}
@@ -62,7 +68,7 @@ llvm::Value *FloatingValueConstructor::constructValue(llvm::Value *original) {
 }
 
 std::string FloatingValueConstructor::describeValue(llvm::Value *original) {
-  return describeFloat(constructValue(original));
+  return describeFloat(makeAPFloat(original->getType(), constantValue));
 }
 
 IntValueConstructor::IntValueConstructor(int value) : constantValue(value) {}
@@ -113,18 +119,22 @@ std::string FlippedIntValueConstructor::describeValue(llvm::Value *original) {
 FlippedFloatingValueConstructor::FlippedFloatingValueConstructor(double fallbackValue)
     : fallbackValue(fallbackValue) {}
 
-llvm::Value *FlippedFloatingValueConstructor::constructValue(llvm::Value *original) {
+llvm::APFloat FlippedFloatingValueConstructor::replacementValue(llvm::Value *original) {
   if (auto constant = llvm::dyn_cast<llvm::ConstantFP>(original)) {
     if (constant->isZero()) {
-      return llvm::ConstantFP::get(original->getType(), 1.0);
+      return makeAPFloat(original->getType(), 1.0);
     }
     llvm::APFloat negated = constant->getValueAPF();
     negated.changeSign();
-    return llvm::ConstantFP::get(original->getType()->getContext(), negated);
+    return negated;
   }
-  return llvm::ConstantFP::get(original->getType(), fallbackValue);
+  return makeAPFloat(original->getType(), fallbackValue);
+}
+
+llvm::Value *FlippedFloatingValueConstructor::constructValue(llvm::Value *original) {
+  return llvm::ConstantFP::get(original->getType()->getContext(), replacementValue(original));
 }
 
 std::string FlippedFloatingValueConstructor::describeValue(llvm::Value *original) {
-  return describeFloat(constructValue(original));
+  return describeFloat(replacementValue(original));
 }
