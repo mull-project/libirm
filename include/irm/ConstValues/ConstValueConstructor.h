@@ -19,6 +19,7 @@
 #include <string>
 
 namespace llvm {
+class APFloat;
 class APInt;
 class Value;
 class Type;
@@ -31,6 +32,7 @@ public:
   /// original: the value being replaced; its type determines the constant's type.
   virtual llvm::Value *constructValue(llvm::Value *original) = 0;
   /// Human-readable form of the constant constructValue would produce for this original.
+  /// Mull calls this from parallel threads, so it must not write to the LLVMContext.
   virtual std::string describeValue(llvm::Value *original) = 0;
   virtual ~ConstValueConstructor() = default;
 };
@@ -81,6 +83,7 @@ public:
   std::string describeValue(llvm::Value *original) override;
 
 private:
+  llvm::APFloat replacementValue(llvm::Value *original);
   double fallbackValue;
 };
 
