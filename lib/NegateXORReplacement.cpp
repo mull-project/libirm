@@ -54,5 +54,6 @@ void NegateXORReplacement::mutate(llvm::Instruction *instruction) {
 #endif
   auto rhs = instruction->getOperand(1);
   auto notInstruction = llvm::BinaryOperator::CreateNot(rhs, "not", position);
+  notInstruction->setDebugLoc(instruction->getDebugLoc());
   instruction->setOperand(1, notInstruction);
 }
