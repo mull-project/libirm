@@ -24,6 +24,8 @@ class Instruction;
 
 namespace irm {
 
+enum class Signedness { Any, Signed, Unsigned };
+
 class IRMutation {
 public:
   virtual bool canMutate(llvm::Instruction *instruction) = 0;
@@ -33,6 +35,10 @@ public:
   /// with mutate(). Empty string means "no instruction-specific description".
   virtual std::string describeReplacement(llvm::Instruction *instruction) {
     return {};
+  }
+  /// Operand signedness the mutation needs but the instruction lacks, e.g. `mul` to `udiv`
+  virtual Signedness signedness() const {
+    return Signedness::Any;
   }
   virtual ~IRMutation() = default;
 };
