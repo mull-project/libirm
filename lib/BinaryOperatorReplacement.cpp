@@ -43,3 +43,26 @@ void BinaryOperatorReplacement::mutate(llvm::Instruction *instruction) {
   instruction->replaceAllUsesWith(replacement);
   instruction->eraseFromParent();
 }
+
+static Signedness opcodeSignedness(llvm::Instruction::BinaryOps opcode) {
+  switch (opcode) {
+  case llvm::Instruction::SDiv:
+  case llvm::Instruction::SRem:
+  case llvm::Instruction::AShr:
+    return Signedness::Signed;
+  case llvm::Instruction::UDiv:
+  case llvm::Instruction::URem:
+  case llvm::Instruction::LShr:
+    return Signedness::Unsigned;
+  default:
+    return Signedness::Any;
+  }
+}
+
+/// A signed or unsigned `from` already fixes the signedness
+Signedness BinaryOperatorReplacement::signedness() const {
+  if (opcodeSignedness(from) != Signedness::Any) {
+    return Signedness::Any;
+  }
+  return opcodeSignedness(to);
+}

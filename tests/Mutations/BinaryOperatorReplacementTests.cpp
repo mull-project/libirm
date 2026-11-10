@@ -60,3 +60,37 @@ TEST(BinaryOperatorReplacement, mutate) {
   ASSERT_EQ(sub.getOperand(0), op1);
   ASSERT_EQ(sub.getOperand(1), op2);
 }
+TEST(BinaryOperatorReplacement, mutateShlToAShr) {
+  using Mutator = ShlToAShr;
+
+  llvm::LLVMContext context;
+  llvm::Module module("test", context);
+  auto type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
+  auto function = llvm::Function::Create(type, llvm::Function::InternalLinkage, "test", module);
+  auto basicBlock = llvm::BasicBlock::Create(context, "entry", function);
+
+  auto op1 = llvm::ConstantInt::get(llvm::IntegerType::get(context, 8), 5, false);
+  auto op2 = llvm::ConstantInt::get(llvm::IntegerType::get(context, 8), 1, false);
+  auto shl = llvm::BinaryOperator::CreateShl(op1, op2, "shl", basicBlock);
+
+  Mutator mutator;
+  ASSERT_TRUE(mutator.canMutate(shl));
+  mutator.mutate(shl);
+
+  auto &ashr = basicBlock->front();
+  ASSERT_EQ(ashr.getOpcode(), llvm::Instruction::AShr);
+  ASSERT_EQ(ashr.getOperand(0), op1);
+  ASSERT_EQ(ashr.getOperand(1), op2);
+}
+
+TEST(BinaryOperatorReplacement, signedness) {
+  ASSERT_EQ(ShlToAShr().signedness(), Signedness::Signed);
+  ASSERT_EQ(ShlToLShr().signedness(), Signedness::Unsigned);
+  ASSERT_EQ(MulToSDiv().signedness(), Signedness::Signed);
+  ASSERT_EQ(MulToUDiv().signedness(), Signedness::Unsigned);
+  /// The original instruction already has the signedness
+  ASSERT_EQ(SRemToSDiv().signedness(), Signedness::Any);
+  ASSERT_EQ(URemToUDiv().signedness(), Signedness::Any);
+  ASSERT_EQ(AShrToShl().signedness(), Signedness::Any);
+  ASSERT_EQ(AddToSub().signedness(), Signedness::Any);
+}

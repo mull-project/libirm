@@ -26,6 +26,7 @@ public:
   BinaryOperatorReplacement(llvm::Instruction::BinaryOps from, llvm::Instruction::BinaryOps to);
   bool canMutate(llvm::Instruction *instruction) override;
   void mutate(llvm::Instruction *instruction) override;
+  Signedness signedness() const override;
 
 private:
   llvm::Instruction::BinaryOps from;
@@ -60,6 +61,7 @@ BINARY_REPLACEMENT(SRem, SDiv)
 BINARY_REPLACEMENT(FRem, FDiv)
 
 BINARY_REPLACEMENT(Shl, LShr)
+BINARY_REPLACEMENT(Shl, AShr)
 BINARY_REPLACEMENT(LShr, Shl)
 BINARY_REPLACEMENT(AShr, Shl)
 BINARY_REPLACEMENT(And, Or)
